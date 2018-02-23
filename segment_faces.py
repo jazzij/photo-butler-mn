@@ -8,7 +8,6 @@ writer = csv.reader(ifile)
 
 def check_existance(branch,to_search1,to_search2):
     for x in range(len(branch)):
-        #print branch[x]
         if to_search1 in branch[x] or to_search2 in branch[x]:
             return x
     return -1
@@ -30,14 +29,3 @@ for x in writer:
 
     except:
         print ' EXCEPTION CAUGHT '
-
-counter = 0
-for x in branch:
-    dst = str(counter)+'/'
-    src = 'faces/'
-    os.mkdir(dst)
-    for y in x:
-        copyfile(src+y, dst+y)
-    counter += 1
-    print x
-    

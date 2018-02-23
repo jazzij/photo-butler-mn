@@ -1,10 +1,10 @@
 from tasks import save_find_faces
-from os import listdir
-import time
+from AWSS3 import *
 
 dataset = []
-for x in listdir('./pictures/'):
-    save_find_faces.delay('pictures/'+x)
+for x in list_directory_s3('pictures'):
+    save_find_faces.delay(x)
+    break
 
 while True:
     print ('PROCESSING')
@@ -14,7 +14,9 @@ while True:
             flag = 1
         else:
             flag = 0
-            break
+        break
+    break
     if flag == 1:
         print 'Images Classified'
         break
+
