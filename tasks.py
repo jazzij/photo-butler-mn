@@ -23,7 +23,7 @@ def save_find_faces(filename):
     for x in face_locations:
         img2 = img.crop((x[3],x[0],x[1],x[2]))
         img2.save('faces/'+str(counter)+filename)
-        print send_file_s3('faces/'+str(counter)+filename,str(counter)+filename,'faces/')
+        print (send_file_s3('faces/'+str(counter)+filename,str(counter)+filename,'faces/'))
         os.remove('faces/'+str(counter)+filename)
         counter += 1
     os.remove(a)
@@ -69,5 +69,5 @@ def compare_faces(indexlocation):
                 break
             results = face_recognition.face_distance([my_face_encoding], unknown_face_encoding) 
             writer.writerow([a[x],a[y],str(results[0])])
-            print [a[x],a[y],results[0]]
+            print ([a[x],a[y],results[0]])
     return badfiles
