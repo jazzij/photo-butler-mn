@@ -131,6 +131,12 @@ class PhotoProject:
             os.remove("./faces/nonclustered/"+x)
 
 
+    def check_exist(self,branch,file1):
+        for x in branch:
+            if file1 in x:
+                return True
+        return False
+
     def cluster_faces(self):
         ifile  = open('facedata.csv', "rb")
         writer = csv.reader(ifile)
@@ -161,3 +167,14 @@ class PhotoProject:
             for y in x:
                 copyfile("./faces/nonclustered/"+y, "./faces/clustered/"+str(counter)+"/"+y)
             counter += 1
+
+        for y in os.listdir('./faces/nonclustered/'):
+            if self.check_exist(branch,y):
+                pass
+            else:
+                if str(counter) in os.listdir("./faces/clustered/"):
+                    pass
+                else:
+                    os.mkdir("./faces/clustered/"+str(counter))
+                copyfile("./faces/nonclustered/"+y, "./faces/clustered/"+str(counter)+"/"+y)
+                counter += 1
