@@ -1,12 +1,9 @@
-import face_recognition
-import os
-import sys
-import csv
+import face_recognition, os, sys, time, csv
 from tqdm import tqdm
 from PIL import Image
 from shutil import copyfile
-from multiprocessing import Process
-from multiprocessing import Pool
+from multiprocessing import Process, Pool
+
 class PhotoProject:
     
     def __init__(self):
@@ -17,33 +14,59 @@ class PhotoProject:
             print ("")
             print ("Import Error")
     
-    def save_find_faces(self,filename, accessor=""):
-        image = face_recognition.load_image_file(accessor+filename)
-        face_locations = face_recognition.face_locations(image, model="hog")
-        img = Image.open(accessor+filename)
-        counter = 0
-        filename = filename.split('/')[-1]
 
-        for x in face_locations:
-            img2 = img.crop((x[3],x[0],x[1],x[2]))
-            img2.save('faces/nonclustered/'+str(counter)+filename)
-            counter += 1
+
+    def save_find_faces(self,filename, accessor=""):
+        if type(filename)=="str":
+            filename = [filename]
+        for z in (filename):
+            image = face_recognition.load_image_file(accessor+z)
+            face_locations = face_recognition.face_locations(image, model="hog")
+            img = Image.open(accessor+z)
+            counter = 0
+            z = z.split('/')[-1]
+
+            for x in face_locations:
+                img2 = img.crop((x[3],x[0],x[1],x[2]))
+                img2.save('faces/nonclustered/'+str(counter)+z)
+                counter += 1
             
+
+
     def save_find_faces_all(self):
+        start_time = time.time()
+
         print ("")
         print ("== Detecting Faces in Images ==")
         print ("")
         pool = []
-        print ("Distributing Processes")
-        for x in tqdm(os.listdir("./pictures")):
-            p = Process(target=self.save_find_faces, args=(x,"./pictures/",))
-            p.start()
-            pool.append(p)
-        print ("Processing Images")
-        for x in tqdm(pool):
-            x.join()
+        dat = (os.listdir("./pictures"))
+        chunk1 = dat[:len(dat)/2]
+        chunk2 = dat[len(dat)/2:]
+        chunk3 = chunk1[:len(chunk1)/2]
+        chunk4 = chunk2[:len(chunk2)/2]
+        chunk1 = chunk1[len(chunk1)/2:]
+        chunk2 = chunk2[len(chunk2)/2:]            
+        p1 = Process(target=self.save_find_faces, args=(chunk1,"./pictures/",))
+        p2 = Process(target=self.save_find_faces, args=(chunk2,"./pictures/",))
+        p3 = Process(target=self.save_find_faces, args=(chunk3,"./pictures/",))
+        p4 = Process(target=self.save_find_faces, args=(chunk4,"./pictures/",))
+        p1.start()
+        p2.start()
+        p3.start()
+        p4.start()
+        print ("Processing Started")
+        p1.join()
+        p2.join()
+        p3.join()
+        p4.join()
+        print ("Successfully Identified Faces")
+        print("--- %s seconds ---" % (time.time() - start_time))
+        print ("")
 
-    def compare_faces(self,face1, face2):
+
+
+    def compare_faces(self,face1,face2):
         try:
             picture_of_me = face_recognition.load_image_file('./faces/nonclustered/'+face1)
             my_face_encoding = face_recognition.face_encodings(picture_of_me)[0]
@@ -59,14 +82,19 @@ class PhotoProject:
 
         results = face_recognition.face_distance([my_face_encoding], unknown_face_encoding) 
         return results[0]
-    
+
+
+
     def check_existance(self,branch,to_search1,to_search2):
         for x in range(len(branch)):
             if to_search1 in branch[x] or to_search2 in branch[x]:
-                return x
-        return -1
+                return (x)
+        return (-1)
+
+
 
     def compare_all_faces(self):
+        start_time = time.time()
         ifile  = open('facedata.csv', "wb")
         writer = csv.writer(ifile)
         writer.writerow(['Picture1','Picture2','Distance'])
@@ -93,8 +121,12 @@ class PhotoProject:
                     writer.writerow([names[y],names[z],str(results[0])])
                 except:
                     continue
+
         for x in bad:
             os.remove("./faces/nonclustered/"+x)
+        print("--- %s seconds ---" % (time.time() - start_time))
+        print ("")
+        
 
 
     def check_exist(self,branch,file1):
@@ -103,14 +135,16 @@ class PhotoProject:
                 return True
         return False
 
-    def cluster_faces(self):
+
+
+    def cluster_faces(self,threshold=0.5):
         ifile  = open('facedata.csv', "rb")
         writer = csv.reader(ifile)
         branch = []
 
         for x in writer:
             try:
-                if float(x[-1]) <= 0.5:
+                if float(x[-1]) <= threshold:
                     tag = self.check_existance(branch,x[0],x[1])
 
                     if tag >= 0:
@@ -122,9 +156,7 @@ class PhotoProject:
                         branch.append([x[0],x[1]])
             except:
                 pass
-
         counter = 0
-        print (branch)
         for x in branch:
             if str(counter) in os.listdir("./faces/clustered/"):
                 pass
