@@ -30,7 +30,12 @@ class PhotoProject:
                 img2 = img.crop((x[3],x[0],x[1],x[2]))
                 img2.save('faces/nonclustered/'+str(counter)+z)
                 counter += 1
-            
+    
+
+    def line_split(self, N, K=1):
+        length = len(N)
+        return [N[i*length/K:(i+1)*length/K] for i in range(K)]
+
 
 
     def save_find_faces_all(self):
@@ -41,25 +46,16 @@ class PhotoProject:
         print ("")
         pool = []
         dat = (os.listdir("./pictures"))
-        chunk1 = dat[:len(dat)/2]
-        chunk2 = dat[len(dat)/2:]
-        chunk3 = chunk1[:len(chunk1)/2]
-        chunk4 = chunk2[:len(chunk2)/2]
-        chunk1 = chunk1[len(chunk1)/2:]
-        chunk2 = chunk2[len(chunk2)/2:]            
-        p1 = Process(target=self.save_find_faces, args=(chunk1,"./pictures/",))
-        p2 = Process(target=self.save_find_faces, args=(chunk2,"./pictures/",))
-        p3 = Process(target=self.save_find_faces, args=(chunk3,"./pictures/",))
-        p4 = Process(target=self.save_find_faces, args=(chunk4,"./pictures/",))
-        p1.start()
-        p2.start()
-        p3.start()
-        p4.start()
+        chunked = self.line_split(dat,multiprocessing.cpu_count()-1)
+        for y in chunked:         
+            p1 = Process(target=self.save_find_faces, args=(y,"./pictures/",))
+            pool.append(p1)
+        for y in pool:
+            y.start()
         print ("Processing Started")
-        p1.join()
-        p2.join()
-        p3.join()
-        p4.join()
+
+        for y in pool:
+            y.join()
         print ("Successfully Identified Faces")
         print("--- %s seconds ---" % (time.time() - start_time))
         print ("")
@@ -126,7 +122,7 @@ class PhotoProject:
             os.remove("./faces/nonclustered/"+x)
         print("--- %s seconds ---" % (time.time() - start_time))
         print ("")
-        
+
 
 
     def check_exist(self,branch,file1):
