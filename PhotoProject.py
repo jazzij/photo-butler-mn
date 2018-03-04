@@ -2,7 +2,7 @@ import face_recognition, os, sys, time, csv
 from tqdm import tqdm
 from PIL import Image
 from shutil import copyfile
-from multiprocessing import Process, Pool
+from multiprocessing import Process, Pool, cpu_count
 
 class PhotoProject:
     
@@ -46,7 +46,7 @@ class PhotoProject:
         print ("")
         pool = []
         dat = (os.listdir("./pictures"))
-        chunked = self.line_split(dat,multiprocessing.cpu_count()-1)
+        chunked = self.line_split(dat,cpu_count()-1)
         for y in chunked:         
             p1 = Process(target=self.save_find_faces, args=(y,"./pictures/",))
             pool.append(p1)
