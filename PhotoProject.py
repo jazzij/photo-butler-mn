@@ -109,7 +109,7 @@ class PhotoProject:
             # Initializing Variables and Data Types
             ifile  = open('facedata.csv', "wb")
             writer = csv.writer(ifile)
-            data,name,badfiles = [],[],[]
+            data,names,badfiles = [],[],[]
 
             # Writing Initial Row to CSV
             writer.writerow(['Picture1','Picture2','Distance'])
@@ -140,7 +140,7 @@ class PhotoProject:
                         writer.writerow([names[y],names[z],str(results[0])])
                     except:
                         continue
-
+            print ("Number of Bad Faces ", len(badfiles))
             # Removing Bad Face Encoded Files
             for x in badfiles:
                 os.remove("./faces/nonclustered/"+x)
