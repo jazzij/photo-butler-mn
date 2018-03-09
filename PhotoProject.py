@@ -19,6 +19,10 @@ class PhotoProject:
             print ("Import Error")
     
 # ---------------------------------------------------#
+ ''' 
+    Automatically saves any found face into a folder. 
+    Naming convention is [x][photoID].jpg (ie 01138, 11138, 21138)
+ '''
 
     def save_find_faces(self,filename, accessor=""):
         try:
@@ -74,6 +78,11 @@ class PhotoProject:
 
 # ---------------------------------------------------#
 
+ ''' 
+    Compare distance between two faces to see if its the same person. 
+    .45 is optimal threshold (per face rec library, referencing CMU OpenFace algorithm)
+    Below .45 means its the same person, and above means its not. 
+'''
     def compare_faces(self,face1,face2):
         try:
             try:
