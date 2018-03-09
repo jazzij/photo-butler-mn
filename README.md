@@ -57,5 +57,6 @@ Below .45 means its the same person, and above means its not. Generating a CSV F
 
  **- `cluster_faces(self,threshold=0.45)`**
 	 Cluster faces in faces/nonclustered basef on similarity
-	 Example:
+	 
+     Example:
 	 `classobject.cluster_faces(self,threshold=0.45)`
