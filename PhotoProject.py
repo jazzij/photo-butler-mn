@@ -96,14 +96,6 @@ class PhotoProject:
 
 # ---------------------------------------------------#
 
-    def check_existance(self,branch,to_search1,to_search2):
-        for x in range(len(branch)):
-            if to_search1 in branch[x] or to_search2 in branch[x]:
-                return (x)
-        return (-1)
-
-# ---------------------------------------------------#
-
     def compare_all_faces(self):
         try:
             # Initializing Variables and Data Types
@@ -159,7 +151,15 @@ class PhotoProject:
 
 # ---------------------------------------------------#
 
-    def cluster_faces(self,threshold=0.5):
+    def check_existance(self,branch,to_search1,to_search2):
+        for x in range(len(branch)):
+            if to_search1 in branch[x] or to_search2 in branch[x]:
+                return (x)
+        return (-1)
+
+# ---------------------------------------------------#
+
+    def cluster_faces(self,threshold=0.45):
         try:
             # Initializing Variables and Data Types
             ifile  = open('facedata.csv', "rb")
@@ -174,9 +174,11 @@ class PhotoProject:
                         tag = self.check_existance(branch,x[0],x[1])   # Checking Existance in any pre-existing branch
                         if tag >= 0:
                             if x[0] in branch[tag]:
-                                branch[tag].append(x[1])
+                                if self.check_exist(branch,x[1])==False:
+                                    branch[tag].append(x[1])
                             elif x[1] in branch[tag]:
-                                branch[tag].append(x[0])
+                                if self.check_exist(branch,x[0])==False:
+                                    branch[tag].append(x[0])
                         else:
                             branch.append([x[0],x[1]])
                 except:
