@@ -100,8 +100,8 @@ class PhotoProject:
             results = face_recognition.face_distance([my_face_encoding], unknown_face_encoding) 
             return results[0]
         except:
-            return -1
             print ("Found Error, Crash Error Code 102")
+            return -1
 
 # ---------------------------------------------------#
 
@@ -147,8 +147,8 @@ class PhotoProject:
                 os.remove("./faces/nonclustered/"+x)
 
         except:
-            return -1
             print ("Found Error, Crash Error Code 103")
+            return -1
 
 # ---------------------------------------------------#
 
@@ -214,7 +214,7 @@ class PhotoProject:
                     folder_id += 1
                 
         except:
-            return -1
             print ("Found Error, Crash Error Code 104")
+            return -1
         
 # ---------------------------------------------------#
