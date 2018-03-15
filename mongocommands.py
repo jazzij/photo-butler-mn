@@ -1,8 +1,10 @@
 from pymongo import *
 import gridfs,os
 
+mongo = "10.146.187.41"
 def send_file_mongo(fileloc,filename,database):
-    db = MongoClient()[database]
+    global mongo
+    db = MongoClient(mongo, 27017)[database]
     fs = gridfs.GridFS(db)
     try:
         if filename in list_directory_mongo(database):
@@ -15,16 +17,18 @@ def send_file_mongo(fileloc,filename,database):
         print ("Error 101")
 
 def list_directory_mongo(database):
-    try:
-        db = MongoClient()[database]
+        global mongo
+    #try:
+        db = MongoClient(mongo, 27017)[database]
         fs = gridfs.GridFS(db)
         return (fs.list())
-    except:
+    #except:
         print ("Error 102")
 
 def get_file_mongo(filename,database):
+    global mongo
     try:
-        db = MongoClient()[database]
+        db = MongoClient(mongo, 27017)[database]
         fs = gridfs.GridFS(db)
         for demo in fs.find({"filename": filename}):
             a = open(filename,'wb')

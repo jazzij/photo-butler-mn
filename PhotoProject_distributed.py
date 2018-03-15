@@ -3,33 +3,37 @@ from tqdm import tqdm
 from PIL import Image
 from shutil import copyfile
 from multiprocessing import Process, Pool, cpu_count
+from mongocommands import *
+from celery import Celery
 
 # ---------------------------------------------------#
- ''' 
+address = "128.101.53.124"
+broker_url = 'amqp://prateek:Welcome123@'+address+':5672/myvhost'
+backend_url = 'rpc://prateek:Welcome123@'+address+':5672/myvhost'
+
+app = Celery('tasks',backend=backend_url, broker=broker_url)
+
+
+# ---------------------------------------------------#
+''' 
     Automatically saves any found face into a folder. 
     Naming convention is [x][photoID].jpg (ie 01138, 11138, 21138)
- '''
-
-def save_find_faces(filename, accessor=""):
-    try:
-        if type(filename)=="str":
-            filename = [filename]
-        for z in (filename):
-            image = face_recognition.load_image_file(accessor+z)
-            face_locations = face_recognition.face_locations(image)
-            img = Image.open(accessor+z)
-            counter = 0
-            z = z.split('/')[-1]
-
-            for x in face_locations:
-                img2 = img.crop((x[3],x[0],x[1],x[2]))
-                img2.save('faces/nonclustered/'+str(counter)+z)
-                counter += 1
-        return True
-
-    except:
-        print ("Found Error, Crash Error Code 100")
-        return False
+'''
+@app.task
+def save_find_faces(filename):
+    get_file_mongo(filename,'photo')
+    image = face_recognition.load_image_file(filename)
+    face_locations = face_recognition.face_locations(image)
+    img = Image.open(filename)
+    counter = 0
+    for x in face_locations:
+        img2 = img.crop((x[3],x[0],x[1],x[2]))
+        new_filename = str(counter)+filename
+        img2.save(new_filename)
+        send_file_mongo(new_filename,new_filename,'faces')
+        os.remove(new_filename)
+        counter += 1
+    os.remove(filename)
             
 # ---------------------------------------------------#
 
@@ -38,7 +42,6 @@ def line_split(N, K=1):
     return [N[i*length/K:(i+1)*length/K] for i in range(K)]
 
 # ---------------------------------------------------#
-
 def save_find_faces_all():
     try:
         print ("")
@@ -64,7 +67,7 @@ def save_find_faces_all():
 
 # ---------------------------------------------------#
 
- ''' 
+''' 
     Compare distance between two faces to see if its the same person. 
     .45 is optimal threshold (per face rec library, referencing CMU OpenFace algorithm)
     Below .45 means its the same person, and above means its not. 
