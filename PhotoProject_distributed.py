@@ -33,6 +33,7 @@ def save_find_faces(filename):
         send_file_mongo(new_filename,new_filename,'faces')
         os.remove(new_filename)
         counter += 1
+    print ("Successfully Completed File "+filename)
     os.remove(filename)
             
 # ---------------------------------------------------#
