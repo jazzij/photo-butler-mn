@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 # ---------------------------------------------------#
 
-mongo = "10.144.214.83"            # IP Address of MongoDB Host
+mongo = "10.128.198.120"            # IP Address of MongoDB Host
 
 # ---------------------------------------------------#
 
@@ -115,7 +115,7 @@ def get_all_images_mongo(foldername, database):
         
 # ---------------------------------------------------#
 
-# Send all files from a folder to Mongo DB
+# Remove images from Mongo DB storage
 
 def remove_image_mongo(filename, database):
     
@@ -132,6 +132,28 @@ def remove_image_mongo(filename, database):
     except Exception as e:
         print (e)
         print ("Error 106")
+        
+# ---------------------------------------------------#
+
+# Store Comparision Values of Images
+
+def store_comparision_value(comp1,comp2,comparision):
+    global mongo
+
+    try:
+        db = MongoClient(mongo, 27017)['database']
+        post = {}
+        post['file1'] = comp1
+        post['file2'] = comp2
+        post['difference'] = comparision
+        posts = db.posts
+        posts.insert_one(post)
+        return True
+    
+    except Exception as e:
+        print (e)
+        print ("Error 107")        
+
         
 # ---------------------------------------------------#
 

@@ -80,26 +80,44 @@ def save_find_faces_all():
     .45 is optimal threshold (per face rec library, referencing CMU OpenFace algorithm)
     Below .45 means its the same person, and above means its not. 
 '''
+@app.task
 def compare_faces(face1,face2):
     try:
+
         try:
-            picture_of_me = face_recognition.load_image_file('./faces/nonclustered/'+face1)
+            get_file_mongo(face1,'faces')
+            picture_of_me = face_recognition.load_image_file(face1)
             my_face_encoding = face_recognition.face_encodings(picture_of_me)[0]
+
         except:
+            remove_image_mongo(face1,'faces')
+            os.remove(face1)
             print ("Error Loading Image 1")
             return -1
+
+
         try:         
-            unknown_picture = face_recognition.load_image_file('./faces/nonclustered/'+face2)
+            get_file_mongo(face2,'faces')
+            unknown_picture = face_recognition.load_image_file(face2)
             unknown_face_encoding = face_recognition.face_encodings(unknown_picture)[0]
+            
         except:
+            remove_image_mongo(face2,'faces')
+            os.remove(face1)
+            os.remove(face2)
             print ("Error Loading Image 2")
             return -1
+
         results = face_recognition.face_distance([my_face_encoding], unknown_face_encoding) 
-        return results[0]
+        store_comparision_value(face1,face2,results[0])
+        
     except:
         print ("Found Error, Crash Error Code 102")
         return -1
 
+    os.remove(face1)
+    os.remove(face2)
+    
 # ---------------------------------------------------#
 
 def compare_all_faces():
