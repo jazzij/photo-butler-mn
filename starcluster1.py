@@ -12,7 +12,7 @@ task_status = []
 file_directory = list_directory_mongo('faces')
 for x in range(len(file_directory)):
     for y in range(x+1, len(file_directory)):
-            z = compare_faces(file_directory[x],file_directory[y])
+            z = compare_faces.delay(file_directory[x],file_directory[y])
             task.append(z)
         
 print ("Tasks Submitted to Cluster")
