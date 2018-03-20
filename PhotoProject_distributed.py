@@ -8,12 +8,12 @@ import gc
 from celery import Celery
 
 # ---------------------------------------------------#
+
 address = "raspberrypi1-umh.cs.umn.edu"
 broker_url = 'amqp://prateek:Welcome123@'+address+':5672/myvhost'
 backend_url = 'rpc://prateek:Welcome123@'+address+':5672/myvhost'
 
 app = Celery('tasks',backend=backend_url, broker=broker_url)
-
 
 # ---------------------------------------------------#
 ''' 
