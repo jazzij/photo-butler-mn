@@ -115,3 +115,23 @@ def get_all_images_mongo(foldername, database):
         
 # ---------------------------------------------------#
 
+# Send all files from a folder to Mongo DB
+
+def remove_image_mongo(filename, database):
+    
+    global mongo
+
+    try:
+        db = MongoClient(mongo, 27017)[database]
+        fs = gridfs.GridFS(db)
+        collection = db.fs.files
+        result = collection.find_one({"filename": filename})
+        fs.delete(result['_id'])
+        return True
+
+    except Exception as e:
+        print (e)
+        print ("Error 106")
+        
+# ---------------------------------------------------#
+
