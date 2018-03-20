@@ -13,5 +13,6 @@ for x in list_directory_mongo('photo'):
 print ("Tasks Submitted to Cluster")
 task_status = [x.ready() for x in task]
 while False in task_status:
+    print task_status.count(False)
     task_status = [x.ready() for x in task]
 print "DONE"
