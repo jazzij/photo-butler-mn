@@ -5,7 +5,8 @@ import os
 task = []
 task_status = []
 
-#send_all_images_mongo('pictures','photo')
+send_all_images_mongo('pictures','photo')
+'''
 for x in list_directory_mongo('photo'):
     if x != '.DS_Store':
         z = save_find_faces.delay(x)
@@ -16,3 +17,4 @@ while False in task_status:
     print task_status.count(False)
     task_status = [x.ready() for x in task]
 print "DONE"
+'''

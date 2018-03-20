@@ -27,6 +27,7 @@ def save_find_faces(filename):
     face_locations = face_recognition.face_locations(image)
     img = Image.open(filename)
     counter = 0
+    img2 = ""
     for x in face_locations:
         img2 = img.crop((x[3],x[0],x[1],x[2]))
         new_filename = str(counter)+filename
