@@ -4,6 +4,7 @@ from PIL import Image
 from shutil import copyfile
 from multiprocessing import Process, Pool, cpu_count
 from mongocommands import *
+import gc
 from celery import Celery
 
 # ---------------------------------------------------#
@@ -35,6 +36,7 @@ def save_find_faces(filename):
         counter += 1
     print ("Successfully Completed File "+filename)
     os.remove(filename)
+    gc.collect()
             
 # ---------------------------------------------------#
 
