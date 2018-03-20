@@ -7,7 +7,7 @@ from mongocommands import *
 from celery import Celery
 
 # ---------------------------------------------------#
-address = "18.222.37.223"
+address = "18.188.116.172"
 broker_url = 'amqp://prateek:Welcome123@'+address+':5672/myvhost'
 backend_url = 'rpc://prateek:Welcome123@'+address+':5672/myvhost'
 
