@@ -1,7 +1,7 @@
 from pymongo import *
 import gridfs,os
 
-mongo = "10.146.140.197"
+mongo = "128.101.53.79"
 def send_file_mongo(fileloc,filename,database):
     global mongo
     db = MongoClient(mongo, 27017)[database]
