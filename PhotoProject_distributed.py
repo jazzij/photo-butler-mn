@@ -103,7 +103,6 @@ def compare_faces(face1,face2):
 
         except:
             remove_image_mongo(face2,'faces')
-            os.remove(face1)
             os.remove(face2)
             print ("Error Loading Image 2")
             return -1
@@ -115,9 +114,6 @@ def compare_faces(face1,face2):
     except:
         print ("Found Error, Crash Error Code 102")
         return -1
-
-    os.remove(face1)
-    os.remove(face2)
     
 # ---------------------------------------------------#
 
