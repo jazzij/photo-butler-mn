@@ -125,8 +125,11 @@ def remove_image_mongo(filename, database):
         db = MongoClient(mongo, 27017)[database]
         fs = gridfs.GridFS(db)
         collection = db.fs.files
-        result = collection.find_one({"filename": filename})
-        fs.delete(result['_id'])
+        try:
+            result = collection.find_one({"filename": filename})
+            fs.delete(result['_id'])
+        except:
+            print ("Image Already Deleted")
         return True
 
     except Exception as e:

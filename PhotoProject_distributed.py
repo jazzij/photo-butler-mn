@@ -109,11 +109,10 @@ def compare_faces(face1,face2):
 
         results = face_recognition.face_distance([my_face_encoding], unknown_face_encoding) 
         store_comparision_value(face1,face2,results[0])
-        print ("Successfully Completed Files ", face1, face2)
+        print "Successfully Completed Files ", face1, face2
 
     except:
         print ("Found Error, Crash Error Code 102")
-        return -1
     
 # ---------------------------------------------------#
 
