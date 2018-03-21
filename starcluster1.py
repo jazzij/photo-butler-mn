@@ -5,18 +5,14 @@ from celery.result import AsyncResult
 import os, time
 
 
-compare_all_faces.delay()
-'''
+
 # Intializing
 task = []
 task_status = []
 
 
 # Sending Tasks to Cluster (Save Find Faces)
-file_directory = list_directory_mongo('faces')
-for x in range(len(file_directory)):
-    z = compare_faces.delay(x)
-    task.append(z)
+compare_all_faces.delay()
         
 print ("Tasks Submitted to Cluster")
 
@@ -24,9 +20,8 @@ print ("Tasks Submitted to Cluster")
 
 task_status = [x.ready() for x in task]
 while False in task_status:
-    time.sleep(15)
+    time.sleep(3)
     print task_status.count(False)
     task_status = [x.ready() for x in task]
 
 print ("Completed Processing Images")
-'''

@@ -2,6 +2,5 @@ import time
 print ("-------------------Starting Face Identification-------------------")
 import startcluster
 print ("-------------------Starting Face Distance-------------------")
-import PhotoProject_distributed
-PhotoProject_distributed.compare_all_faces
+import starcluster1
 print ("-------------------Done with Image Analysis-------------------")
