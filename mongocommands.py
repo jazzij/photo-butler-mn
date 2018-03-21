@@ -176,4 +176,3 @@ def get_list_bad_mongo():
         print (e)
         print ("Error 108")
 
-print get_list_bad_mongo()

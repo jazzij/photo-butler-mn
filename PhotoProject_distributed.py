@@ -83,7 +83,7 @@ def save_find_faces_all():
 @app.task
 def compare_faces(face1,face2):
     try:
-        bad_pics = get_list_bad_mongo
+        bad_pics = get_list_bad_mongo()
         if face1 in bad_pics or face2 in bad_pics:
             return False
         else:
