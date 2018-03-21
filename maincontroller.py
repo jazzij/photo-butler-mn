@@ -1,3 +1,4 @@
+import time
 print ("-------------------Starting Face Identification-------------------")
 import startcluster
 print ("-------------------Starting Face Distance-------------------")

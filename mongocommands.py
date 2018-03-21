@@ -176,3 +176,4 @@ def get_list_bad_mongo():
         print (e)
         print ("Error 108")
 
+get_all_images_mongo('faces/','faces')

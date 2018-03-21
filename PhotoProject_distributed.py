@@ -86,43 +86,31 @@ def compare_faces(index):
         file_directory = list_directory_mongo('faces')
         bad_pics = get_list_bad_mongo()
         stored = os.listdir('./')
+        encodings = []
+        for x in file_directory:
+            get_file_mongo(x,'faces')
+            try:
+                encodings.append(face_recognition.face_encodings(face_recognition.load_image_file(x))[0])
+            except:
+                encodings.append(None)
+                remove_image_mongo(x,'faces')
 
         face1 = file_directory[index]
-        if face1 not in bad_pics:
-            try:
-                if face1 not in stored:
-                    get_file_mongo(face1,'faces')
-
-                picture_of_me = face_recognition.load_image_file(face1)
-                my_face_encoding = face_recognition.face_encodings(picture_of_me)[0]
-
-            except:
-                remove_image_mongo(face1,'faces')
-                return "Face1 is bad", face1
-
+        if face1 not in bad_pics and encodings[index] != None:
+            my_face_encoding = encodings[index]
         else:
             return "Face1 is bad", face1
 
         for y in tqdm(range(index+1,len(file_directory))):
             bad_pics = get_list_bad_mongo()
             face2 = file_directory[y]
-
-            if face2 not in bad_pics:
-                try:
-                    if face2 not in stored:
-                        get_file_mongo(face2,'faces')
-                    unknown_picture = face_recognition.load_image_file(face2)
-                    unknown_face_encoding = face_recognition.face_encodings(unknown_picture)[0]
-                except:
-                    remove_image_mongo(face2,'faces')
-                    print ("Face2 is bad", face2)
-                    continue
+            if face2 not in bad_pics and encodings[y] != None:
+                unknown_face_encoding = encodings[y]
             else:
-                print ("Face2 is bad", face2)
                 continue
             results = face_recognition.face_distance([my_face_encoding], unknown_face_encoding) 
             store_comparision_value(face1,face2,results[0])
-            #print "Successfully Completed Files "+ face1+" "+face2
+            print "Successfully Completed Files "+ face1+" "+face2
 
     except Exception as e:
         print (e)
