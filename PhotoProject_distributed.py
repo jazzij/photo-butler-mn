@@ -83,34 +83,37 @@ def save_find_faces_all():
 @app.task
 def compare_faces(face1,face2):
     try:
-        stored = os.listdir('./')
-        try:
-            if face1 not in stored:
-                get_file_mongo(face1,'faces')
-            picture_of_me = face_recognition.load_image_file(face1)
-            my_face_encoding = face_recognition.face_encodings(picture_of_me)[0]
-
-        except:
-            remove_image_mongo(face1,'faces')
-            print ("Error Loading Image 1")
+        bad_pics = get_list_bad_mongo
+        if face1 in bad_pics or face2 in bad_pics:
             return False
+        else:
+            stored = os.listdir('./')
+            try:
+                if face1 not in stored:
+                    get_file_mongo(face1,'faces')
+                picture_of_me = face_recognition.load_image_file(face1)
+                my_face_encoding = face_recognition.face_encodings(picture_of_me)[0]
 
+            except:
+                remove_image_mongo(face1,'faces')
+                print ("Error Loading Image 1")
+                return False
 
-        try:
-            if face2 not in stored:
-                get_file_mongo(face2,'faces')
-            picture_of_me = face_recognition.load_image_file(face2)
-            unknown_picture = face_recognition.load_image_file(face2)
-            unknown_face_encoding = face_recognition.face_encodings(unknown_picture)[0]
+            try:
+                if face2 not in stored:
+                    get_file_mongo(face2,'faces')
+                picture_of_me = face_recognition.load_image_file(face2)
+                unknown_picture = face_recognition.load_image_file(face2)
+                unknown_face_encoding = face_recognition.face_encodings(unknown_picture)[0]
 
-        except:
-            remove_image_mongo(face2,'faces')
-            print ("Error Loading Image 2")
-            return False
+            except:
+                remove_image_mongo(face2,'faces')
+                print ("Error Loading Image 2")
+                return False
 
-        results = face_recognition.face_distance([my_face_encoding], unknown_face_encoding) 
-        store_comparision_value(face1,face2,results[0])
-        print "Successfully Completed Files "+ face1+" "+face2
+            results = face_recognition.face_distance([my_face_encoding], unknown_face_encoding) 
+            store_comparision_value(face1,face2,results[0])
+            print "Successfully Completed Files "+ face1+" "+face2
 
     except Exception as e:
         print (e)

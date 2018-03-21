@@ -155,24 +155,25 @@ def store_comparision_value(comp1,comp2,comparision):
         print (e)
         print ("Error 107")        
 
-        
+
 # ---------------------------------------------------#
 
 # Get file from Mongo DB and store with different name
 
-def get_file_mongo_different(filename,database,newname):
+def get_list_bad_mongo():
     
     global mongo
-    
+
     try:
-        db = MongoClient(mongo, 27017)[database]
-        fs = gridfs.GridFS(db)
-        for demo in fs.find({"filename": filename}):
-            a = open(newname,'wb')
-            a.write(demo.read())
-            a.close()
-        return True
+        final = []
+        db = MongoClient(mongo, 27017)['database']
+        posts = db.to_be_deleted
+        for x in posts.find():
+            final.append(x['filename'])
+        return final
         
     except Exception as e:
         print (e)
-        print ("Error 103")
+        print ("Error 108")
+
+print get_list_bad_mongo()
