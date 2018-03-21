@@ -32,7 +32,13 @@ def save_find_faces(filename):
         img2 = img.crop((x[3],x[0],x[1],x[2]))
         new_filename = str(counter)+filename
         img2.save(new_filename)
-        send_file_mongo(new_filename,new_filename,'faces')
+        try:
+            picture = face_recognition.load_image_file(newnameface1)
+            face_encoding = face_recognition.face_encodings(picture)[0]
+            send_data_mongo(face_encoding,new_filename,'faceencodings')
+            send_file_mongo(new_filename,new_filename,'faces')
+        except:
+            pass
         os.remove(new_filename)
         counter += 1
     print ("Successfully Completed File "+filename)

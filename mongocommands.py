@@ -175,4 +175,27 @@ def get_file_mongo_different(filename,database,newname):
         
     except Exception as e:
         print (e)
-        print ("Error 103")
+        print ("Error 108")
+
+
+# Sending Image Files to MongoDB
+
+def send_data_mongo(data,filename,database):
+    
+    global mongo
+    db = MongoClient(mongo, 27017)[database]
+    fs = gridfs.GridFS(db)
+    
+    try:
+    
+        if filename in list_directory_mongo(database):
+            print ("File Exists")
+    
+        else:
+            fs.put(data,filename=filename)
+            return True
+
+    except Exception as e:
+    
+        print (e)
+        print ("Error 109")

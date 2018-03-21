@@ -4,9 +4,11 @@ from mongocommands import *
 from celery.result import AsyncResult
 import os, time
 
+
 # Intializing
 task = []
 task_status = []
+
 
 # Sending Tasks to Cluster (Save Find Faces)
 file_directory = list_directory_mongo('faces')
