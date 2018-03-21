@@ -98,6 +98,8 @@ def compare_faces(index):
 
             except:
                 remove_image_mongo(face1,'faces')
+                return "Face1 is bad"
+
         else:
             return "Face1 is bad"
 
@@ -106,7 +108,6 @@ def compare_faces(index):
             face2 = file_directory[y]
 
             if face2 not in bad_pics:
-
                 try:
                     if face2 not in stored:
                         get_file_mongo(face2,'faces')
@@ -115,10 +116,12 @@ def compare_faces(index):
                 except:
                     remove_image_mongo(face2,'faces')
                     return "Face2 is bad"
+            else:
+                return "Face2 is bad"
 
             results = face_recognition.face_distance([my_face_encoding], unknown_face_encoding) 
             store_comparision_value(face1,face2,results[0])
-            print "Successfully Completed Files "+ face1+" "+face2
+            #print "Successfully Completed Files "+ face1+" "+face2
 
     except Exception as e:
         print (e)
