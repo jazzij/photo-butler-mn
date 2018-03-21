@@ -32,14 +32,7 @@ def save_find_faces(filename):
         img2 = img.crop((x[3],x[0],x[1],x[2]))
         new_filename = str(counter)+filename
         img2.save(new_filename)
-        try:
-            picture = face_recognition.load_image_file(new_filename)
-            face_encoding = face_recognition.face_encodings(picture)[0]
-            send_data_mongo(face_encoding,new_filename,'faceencodings')
-            send_file_mongo(new_filename,new_filename,'faces')
-        except Exception as e:
-            print (e)
-
+        send_file_mongo(new_filename,new_filename,'faces')
         os.remove(new_filename)
         counter += 1
     print ("Successfully Completed File "+filename)
@@ -116,7 +109,7 @@ def compare_faces(face1,face2):
             os.remove(newnameface1)
             os.remove(newnameface2)
             print ("Error Loading Image 2")
-            return False
+            return -1
 
         results = face_recognition.face_distance([my_face_encoding], unknown_face_encoding) 
         store_comparision_value(face1,face2,results[0])
@@ -240,6 +233,6 @@ def cluster_faces(threshold=0.45):
             
     except:
         print ("Found Error, Crash Error Code 104")
-        return -1
+        return False
         
 # ---------------------------------------------------#

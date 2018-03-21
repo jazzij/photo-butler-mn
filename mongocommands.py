@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 # ---------------------------------------------------#
 
-mongo = "10.146.140.197"            # IP Address of MongoDB Host
+mongo = "10.128.198.120"            # IP Address of MongoDB Host
 
 # ---------------------------------------------------#
 
@@ -175,27 +175,4 @@ def get_file_mongo_different(filename,database,newname):
         
     except Exception as e:
         print (e)
-        print ("Error 108")
-
-
-# Sending Image Files to MongoDB
-
-def send_data_mongo(data,filename,database):
-    
-    global mongo
-    db = MongoClient(mongo, 27017)[database]
-    fs = gridfs.GridFS(db)
-    
-    try:
-    
-        if filename in list_directory_mongo(database):
-            print ("File Exists")
-    
-        else:
-            fs.put(data,filename=filename)
-            return True
-
-    except Exception as e:
-    
-        print (e)
-        print ("Error 109")
+        print ("Error 103")
