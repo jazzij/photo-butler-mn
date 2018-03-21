@@ -167,8 +167,8 @@ def get_list_bad_mongo():
     try:
         final = []
         db = MongoClient(mongo, 27017)['database']
-        posts = db.to_be_deleted
-        for x in posts.find():
+        posts = db.to_be_deleted.find()
+        for x in posts:
             final.append(x['filename'])
         return final
         
