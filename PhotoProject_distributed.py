@@ -33,7 +33,7 @@ def save_find_faces(filename):
         new_filename = str(counter)+filename
         img2.save(new_filename)
         try:
-            picture = face_recognition.load_image_file(newnameface1)
+            picture = face_recognition.load_image_file(new_filename)
             face_encoding = face_recognition.face_encodings(picture)[0]
             send_data_mongo(face_encoding,new_filename,'faceencodings')
             send_file_mongo(new_filename,new_filename,'faces')
