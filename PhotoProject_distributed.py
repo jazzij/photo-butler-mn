@@ -98,10 +98,10 @@ def compare_faces(index):
 
             except:
                 remove_image_mongo(face1,'faces')
-                return "Face1 is bad"
+                return "Face1 is bad", face1
 
         else:
-            return "Face1 is bad"
+            return "Face1 is bad", face1
 
         for y in tqdm(range(index+1,len(file_directory))):
             bad_pics = get_list_bad_mongo()
@@ -115,9 +115,9 @@ def compare_faces(index):
                     unknown_face_encoding = face_recognition.face_encodings(unknown_picture)[0]
                 except:
                     remove_image_mongo(face2,'faces')
-                    return "Face2 is bad"
+                    return "Face2 is bad", face2
             else:
-                return "Face2 is bad"
+                return "Face2 is bad", face2
 
             results = face_recognition.face_distance([my_face_encoding], unknown_face_encoding) 
             store_comparision_value(face1,face2,results[0])
