@@ -83,7 +83,7 @@ def save_find_faces_all():
 @app.task
 def compare_faces(face1,face2):
     try:
-        stored = os.listdir()
+        stored = os.listdir('./')
         try:
             if face1 not in stored:
                 get_file_mongo(face1,'faces')
