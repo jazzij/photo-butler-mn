@@ -1,10 +1,12 @@
 # Import Statements
-from PhotoProject_distributed import compare_faces
+from PhotoProject_distributed import compare_faces, compare_all_faces
 from mongocommands import *
 from celery.result import AsyncResult
 import os, time
 
 
+compare_all_faces.delay()
+'''
 # Intializing
 task = []
 task_status = []
@@ -27,3 +29,4 @@ while False in task_status:
     task_status = [x.ready() for x in task]
 
 print ("Completed Processing Images")
+'''

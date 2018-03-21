@@ -129,7 +129,7 @@ def compare_faces(index):
         print ("Found Error, Crash Error Code 102")
 
 # ---------------------------------------------------#
-
+@app.task
 def compare_all_faces():
     try:
         # Initializing Variables and Data Types
