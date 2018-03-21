@@ -83,33 +83,30 @@ def save_find_faces_all():
 @app.task
 def compare_faces(face1,face2):
     try:
-
+        stored = os.listdir()
         try:
-            newnameface1 = str(random.randint(1,1000000)) + face1
-            get_file_mongo_different(face1,'faces',newnameface1)
-            picture_of_me = face_recognition.load_image_file(newnameface1)
+            if face1 not in stored:
+                get_file_mongo(face1,'faces')
+            picture_of_me = face_recognition.load_image_file(face1)
             my_face_encoding = face_recognition.face_encodings(picture_of_me)[0]
 
         except:
             remove_image_mongo(face1,'faces')
-            os.remove(newnameface1)
-            os.remove(newnameface2)
             print ("Error Loading Image 1")
             return False
 
 
         try:
-            newnameface2 = str(random.randint(1,1000000)) + face2        
-            get_file_mongo_different(face2,'faces',newnameface2)
-            unknown_picture = face_recognition.load_image_file(newnameface2)
+            if face2 not in stored:
+                get_file_mongo(face2,'faces')
+            picture_of_me = face_recognition.load_image_file(face2)
+            unknown_picture = face_recognition.load_image_file(face2)
             unknown_face_encoding = face_recognition.face_encodings(unknown_picture)[0]
 
         except:
             remove_image_mongo(face2,'faces')
-            os.remove(newnameface1)
-            os.remove(newnameface2)
             print ("Error Loading Image 2")
-            return -1
+            return False
 
         results = face_recognition.face_distance([my_face_encoding], unknown_face_encoding) 
         store_comparision_value(face1,face2,results[0])
@@ -117,10 +114,7 @@ def compare_faces(face1,face2):
 
     except:
         print ("Found Error, Crash Error Code 102")
-    
-    os.remove(newnameface1)
-    os.remove(newnameface2)
-    
+
 # ---------------------------------------------------#
 
 def compare_all_faces():
