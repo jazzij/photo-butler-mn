@@ -133,15 +133,10 @@ def compare_faces(index):
 def compare_all_faces():
     try:
         # Initializing Variables and Data Types
-        ifile  = open('facedata.csv', "wb")
-        writer = csv.writer(ifile)
-        data,names,badfiles = [],[],[]
-
-        # Writing Initial Row to CSV
-        writer.writerow(['Picture1','Picture2','Distance'])
+        data,names= [],[]
 
         # Process all files in nonclustered
-        available_files = os.listdir('./faces/nonclustered/')
+        available_files = list_directory_mongo('faces')
 
         print ("")
         print ("== Comparing Faces ==")
@@ -151,11 +146,12 @@ def compare_all_faces():
         # Encoding all files to memory
         for x in tqdm(range(len(available_files))):
             try:
-                image_file =  face_recognition.load_image_file('./faces/nonclustered/'+available_files[x])
+                get_all_images_mongo('faces/','faces')
+                image_file =  face_recognition.load_image_file('./faces/'+available_files[x])
                 data.append(face_recognition.face_encodings(image_file)[0])
                 names.append(available_files[x])
             except:
-                badfiles.append(available_files[x])
+                remove_image_mongo(x,'faces')
         
         # Comparing the encoded files
         print ("Comparing Faces")
@@ -163,13 +159,10 @@ def compare_all_faces():
             for z in range(y+1, len(data)):    
                 try:
                     results = face_recognition.face_distance([data[y]], data[z]) 
-                    writer.writerow([names[y],names[z],str(results[0])])
+                    store_comparision_value(names[y],names[z],results[0])
                 except:
                     continue
-        print ("Number of Bad Faces ", len(badfiles))
         # Removing Bad Face Encoded Files
-        for x in badfiles:
-            os.remove("./faces/nonclustered/"+x)
 
     except:
         print ("Found Error, Crash Error Code 103")
