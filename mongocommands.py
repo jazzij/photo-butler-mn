@@ -175,5 +175,3 @@ def get_list_bad_mongo():
     except Exception as e:
         print (e)
         print ("Error 108")
-
-get_all_images_mongo('faces/','faces')
