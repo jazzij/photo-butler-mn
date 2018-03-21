@@ -23,8 +23,8 @@ print ("Tasks Submitted to Cluster")
 
 task_status = [x.ready() for x in task]
 while False in task_status:
+    time.sleep(15)
     print task_status.count(False)
     task_status = [x.ready() for x in task]
-    time.sleep(4)
 
 print ("Completed Processing Images")
