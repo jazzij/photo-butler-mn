@@ -37,8 +37,9 @@ def save_find_faces(filename):
             face_encoding = face_recognition.face_encodings(picture)[0]
             send_data_mongo(face_encoding,new_filename,'faceencodings')
             send_file_mongo(new_filename,new_filename,'faces')
-        except:
-            pass
+        except Exception as e:
+            print (e)
+
         os.remove(new_filename)
         counter += 1
     print ("Successfully Completed File "+filename)

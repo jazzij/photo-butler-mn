@@ -192,7 +192,7 @@ def send_data_mongo(data,filename,database):
             print ("File Exists")
     
         else:
-            fs.put(data,filename=filename)
+            fs.put(fencoding=data,filename=filename)
             return True
 
     except Exception as e:
