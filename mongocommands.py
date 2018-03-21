@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 # ---------------------------------------------------#
 
-mongo = "10.128.198.120"            # IP Address of MongoDB Host
+mongo = "10.146.140.197"            # IP Address of MongoDB Host
 
 # ---------------------------------------------------#
 
@@ -158,3 +158,21 @@ def store_comparision_value(comp1,comp2,comparision):
         
 # ---------------------------------------------------#
 
+# Get file from Mongo DB and store with different name
+
+def get_file_mongo_different(filename,database,newname):
+    
+    global mongo
+    
+    try:
+        db = MongoClient(mongo, 27017)[database]
+        fs = gridfs.GridFS(db)
+        for demo in fs.find({"filename": filename}):
+            a = open(newname,'wb')
+            a.write(demo.read())
+            a.close()
+        return True
+        
+    except Exception as e:
+        print (e)
+        print ("Error 103")
