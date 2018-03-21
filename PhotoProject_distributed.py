@@ -115,10 +115,11 @@ def compare_faces(index):
                     unknown_face_encoding = face_recognition.face_encodings(unknown_picture)[0]
                 except:
                     remove_image_mongo(face2,'faces')
-                    return "Face2 is bad", face2
+                    print ("Face2 is bad", face2)
+                    continue
             else:
-                return "Face2 is bad", face2
-
+                print ("Face2 is bad", face2)
+                continue
             results = face_recognition.face_distance([my_face_encoding], unknown_face_encoding) 
             store_comparision_value(face1,face2,results[0])
             #print "Successfully Completed Files "+ face1+" "+face2
