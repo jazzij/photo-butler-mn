@@ -112,9 +112,9 @@ def compare_faces(face1,face2):
         store_comparision_value(face1,face2,results[0])
         print "Successfully Completed Files "+ face1+" "+face2
 
-        except Exception as e:
-            print (e)
-            print ("Found Error, Crash Error Code 102")
+    except Exception as e:
+        print (e)
+        print ("Found Error, Crash Error Code 102")
 
 # ---------------------------------------------------#
 
