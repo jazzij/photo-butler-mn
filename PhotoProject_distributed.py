@@ -81,35 +81,39 @@ def save_find_faces_all():
     Below .45 means its the same person, and above means its not. 
 '''
 @app.task
-def compare_faces(face1,face2):
+def compare_faces(index):
     try:
+        file_directory = list_directory_mongo('faces')
         bad_pics = get_list_bad_mongo()
-        if face1 in bad_pics or face2 in bad_pics:
-            return False
-        else:
-            stored = os.listdir('./')
+        stored = os.listdir('./')
+
+        face1 = file_directory[index]
+        if face1 not in bad_pics:
             try:
                 if face1 not in stored:
                     get_file_mongo(face1,'faces')
+
                 picture_of_me = face_recognition.load_image_file(face1)
                 my_face_encoding = face_recognition.face_encodings(picture_of_me)[0]
 
             except:
                 remove_image_mongo(face1,'faces')
-                print ("Error Loading Image 1")
-                return False
+        else:
+            return "Face1 is bad"
 
-            try:
-                if face2 not in stored:
-                    get_file_mongo(face2,'faces')
-                picture_of_me = face_recognition.load_image_file(face2)
-                unknown_picture = face_recognition.load_image_file(face2)
-                unknown_face_encoding = face_recognition.face_encodings(unknown_picture)[0]
+        for y in range(index+1,len(file_directory)):
+            bad_pics = get_list_bad_mongo()
+            face2 = file_directory[y]
 
-            except:
-                remove_image_mongo(face2,'faces')
-                print ("Error Loading Image 2")
-                return False
+            if face2 not in bad_pics:
+
+                try:
+                    if face2 not in stored:
+                        get_file_mongo(face2,'faces')
+                    unknown_picture = face_recognition.load_image_file(face2)
+                    unknown_face_encoding = face_recognition.face_encodings(unknown_picture)[0]
+                except:
+                    remove_image_mongo(face2,'faces')
 
             results = face_recognition.face_distance([my_face_encoding], unknown_face_encoding) 
             store_comparision_value(face1,face2,results[0])
