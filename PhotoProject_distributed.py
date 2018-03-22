@@ -154,7 +154,7 @@ def compare_all_faces():
                 remove_image_mongo(x,'faces')
         
         # Comparing the encoded files
-        print ("Comparing Faces")
+        print ("-------------------------------Comparing Faces------------------------")
         for y in tqdm(range(len(data))):
             for z in range(y+1, len(data)):    
                 try:
@@ -163,7 +163,7 @@ def compare_all_faces():
                 except:
                     continue
         # Removing Bad Face Encoded Files
-
+        print "DONE WITH EVERYTHING"
     except:
         print ("Found Error, Crash Error Code 103")
         return -1
