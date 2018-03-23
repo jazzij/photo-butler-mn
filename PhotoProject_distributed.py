@@ -142,11 +142,11 @@ def compare_all_faces():
         print ("== Comparing Faces ==")
         print ("")
         print ("Encoding Faces")
+        get_all_images_mongo('faces/','faces')
 
         # Encoding all files to memory
         for x in range(len(available_files)):
             try:
-                get_all_images_mongo('faces/','faces')
                 image_file =  face_recognition.load_image_file('./faces/'+available_files[x])
                 data.append(face_recognition.face_encodings(image_file)[0])
                 names.append(available_files[x])
