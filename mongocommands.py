@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 # ---------------------------------------------------#
 
-mongo = "10.128.198.120"            # IP Address of MongoDB Host
+mongo = "10.146.140.197"            # IP Address of MongoDB Host
 
 # ---------------------------------------------------#
 
@@ -175,3 +175,4 @@ def get_list_bad_mongo():
     except Exception as e:
         print (e)
         print ("Error 108")
+get_all_images_mongo('faces','faces')

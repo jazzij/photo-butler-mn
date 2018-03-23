@@ -12,7 +12,7 @@ task_status = []
 
 
 # Sending Tasks to Cluster (Save Find Faces)
-compare_all_faces.delay()
+task.append(compare_all_faces.delay())
         
 print ("Tasks Submitted to Cluster")
 
