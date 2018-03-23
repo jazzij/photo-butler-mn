@@ -144,7 +144,7 @@ def compare_all_faces():
         print ("Encoding Faces")
 
         # Encoding all files to memory
-        for x in tqdm(range(len(available_files))):
+        for x in range(len(available_files)):
             try:
                 get_all_images_mongo('faces/','faces')
                 image_file =  face_recognition.load_image_file('./faces/'+available_files[x])
@@ -152,10 +152,10 @@ def compare_all_faces():
                 names.append(available_files[x])
             except:
                 remove_image_mongo(x,'faces')
-        
+        gc.collect()
         # Comparing the encoded files
         print ("-------------------------------Comparing Faces------------------------")
-        for y in tqdm(range(len(data))):
+        for y in range(len(data)):
             for z in range(y+1, len(data)):    
                 try:
                     results = face_recognition.face_distance([data[y]], data[z]) 
