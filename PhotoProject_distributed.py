@@ -161,7 +161,7 @@ def compare_all_faces():
                     results = face_recognition.face_distance([data[y]], data[z]) 
                     store_comparision_value(names[y],names[z],results[0])
                 except:
-                    continue
+                    pass
         # Removing Bad Face Encoded Files
         print "DONE WITH EVERYTHING"
     except:
