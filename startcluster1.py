@@ -4,8 +4,6 @@ from mongocommands import *
 from celery.result import AsyncResult
 import os, time
 
-
-
 # Intializing
 task = []
 task_status = []
