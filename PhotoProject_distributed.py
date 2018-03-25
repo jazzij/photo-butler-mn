@@ -81,87 +81,89 @@ def save_find_faces_all():
     Below .45 means its the same person, and above means its not. 
 '''
 @app.task
-def compare_faces(face1,face2):
+def compare_faces(index):
     try:
+        file_directory = list_directory_mongo('faces')
         bad_pics = get_list_bad_mongo()
-        if face1 in bad_pics or face2 in bad_pics:
-            return False
-        else:
-            stored = os.listdir('./')
+        stored = os.listdir('./')
+
+        face1 = file_directory[index]
+        if face1 not in bad_pics:
             try:
                 if face1 not in stored:
                     get_file_mongo(face1,'faces')
+
                 picture_of_me = face_recognition.load_image_file(face1)
                 my_face_encoding = face_recognition.face_encodings(picture_of_me)[0]
 
             except:
                 remove_image_mongo(face1,'faces')
-                print ("Error Loading Image 1")
-                return False
+                return "Face1 is bad", face1
 
-            try:
-                if face2 not in stored:
-                    get_file_mongo(face2,'faces')
-                picture_of_me = face_recognition.load_image_file(face2)
-                unknown_picture = face_recognition.load_image_file(face2)
-                unknown_face_encoding = face_recognition.face_encodings(unknown_picture)[0]
+        else:
+            return "Face1 is bad", face1
 
-            except:
-                remove_image_mongo(face2,'faces')
-                print ("Error Loading Image 2")
-                return False
+        for y in tqdm(range(index+1,len(file_directory))):
+            bad_pics = get_list_bad_mongo()
+            face2 = file_directory[y]
 
+            if face2 not in bad_pics:
+                try:
+                    if face2 not in stored:
+                        get_file_mongo(face2,'faces')
+                    unknown_picture = face_recognition.load_image_file(face2)
+                    unknown_face_encoding = face_recognition.face_encodings(unknown_picture)[0]
+                except:
+                    remove_image_mongo(face2,'faces')
+                    #print ("Face2 is bad", face2)
+                    continue
+            else:
+                #print ("Face2 is bad", face2)
+                continue
             results = face_recognition.face_distance([my_face_encoding], unknown_face_encoding) 
             store_comparision_value(face1,face2,results[0])
-            print "Successfully Completed Files "+ face1+" "+face2
+            #print "Successfully Completed Files "+ face1+" "+face2
 
     except Exception as e:
         print (e)
         print ("Found Error, Crash Error Code 102")
 
 # ---------------------------------------------------#
-
+@app.task
 def compare_all_faces():
     try:
         # Initializing Variables and Data Types
-        ifile  = open('facedata.csv', "wb")
-        writer = csv.writer(ifile)
-        data,names,badfiles = [],[],[]
-
-        # Writing Initial Row to CSV
-        writer.writerow(['Picture1','Picture2','Distance'])
+        data,names= [],[]
 
         # Process all files in nonclustered
-        available_files = os.listdir('./faces/nonclustered/')
+        available_files = list_directory_mongo('faces')
 
         print ("")
         print ("== Comparing Faces ==")
         print ("")
-        print ("Encoding Faces")
-
+        print ("-------------------------------Getting Faces------------------------")
+        get_all_images_mongo('faces/','faces')
+        print ("-------------------------------Encoding Faces------------------------")
         # Encoding all files to memory
         for x in tqdm(range(len(available_files))):
             try:
-                image_file =  face_recognition.load_image_file('./faces/nonclustered/'+available_files[x])
+                image_file =  face_recognition.load_image_file('./faces/'+available_files[x])
                 data.append(face_recognition.face_encodings(image_file)[0])
                 names.append(available_files[x])
             except:
-                badfiles.append(available_files[x])
-        
+                remove_image_mongo(x,'faces')
+        gc.collect()
         # Comparing the encoded files
-        print ("Comparing Faces")
+        print ("-------------------------------Comparing Faces------------------------")
         for y in tqdm(range(len(data))):
             for z in range(y+1, len(data)):    
                 try:
                     results = face_recognition.face_distance([data[y]], data[z]) 
-                    writer.writerow([names[y],names[z],str(results[0])])
+                    store_comparision_value(names[y],names[z],results[0])
                 except:
                     continue
-        print ("Number of Bad Faces ", len(badfiles))
         # Removing Bad Face Encoded Files
-        for x in badfiles:
-            os.remove("./faces/nonclustered/"+x)
-
+        print "DONE WITH EVERYTHING"
     except:
         print ("Found Error, Crash Error Code 103")
         return -1
