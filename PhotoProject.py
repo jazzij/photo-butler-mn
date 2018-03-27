@@ -3,7 +3,8 @@ from tqdm import tqdm
 from PIL import Image
 from shutil import copyfile
 from multiprocessing import Process, Pool, cpu_count
-
+import sys
+#sys.path.append('../webthings')
 # ---------------------------------------------------#
 
 class PhotoProject:
@@ -28,8 +29,6 @@ class PhotoProject:
         try:
             if type(filename)=="str":
                 filename = [filename]
-            if filename.split('.')[-1] not in ['jpg','JPG','png','PNG','jpeg','JPEG']:
-                return False
             for z in (filename):
                 image = face_recognition.load_image_file(accessor+z)
                 face_locations = face_recognition.face_locations(image)
@@ -43,7 +42,8 @@ class PhotoProject:
                     counter += 1
             return True
 
-        except:
+        except Exception as e: 
+            print(e)
             print ("Found Error, Crash Error Code 100")
             return False
             
@@ -74,8 +74,8 @@ class PhotoProject:
             print ("Successfully Identified Faces")
             print ("")
             return True
-        except:
-            print ("Found Error, Crash Error Code 101")
+        except Exception as e: 
+            print(e)
             return False
 
 # ---------------------------------------------------#
@@ -220,3 +220,77 @@ class PhotoProject:
             return -1
         
 # ---------------------------------------------------#
+
+def eval_against_face(image,imageloc):
+    # Initializing Variables and Data Types
+    ifile  = open('facedata'+image+'.csv', "wb")
+    writer = csv.writer(ifile)
+    data,names,badfiles = [],[],[]
+    counter = 0
+    threshold = 0.50
+
+    # Writing Initial Row to CSV
+    writer.writerow(['Picture1','Picture2','Distance'])
+
+    # Process all files in nonclustered
+    available_files = os.listdir('../faces/nonclustered/')
+
+    print ("")
+    print ("== Comparing Faces ==")
+    print ("")
+
+    try:
+        foo = Image.open(imageloc)
+
+        baseheight = 500
+        wpercent = (baseheight / float(foo.size[1]))
+        bsize = int((float(foo.size[0]) * float(wpercent)))
+
+        foo = foo.resize((bsize,baseheight), Image.ANTIALIAS)
+        foo = foo.rotate(-90)
+        foo = foo.transpose(Image.FLIP_LEFT_RIGHT)
+
+        foo.save(imageloc,optimize=True)
+
+        image1 = face_recognition.load_image_file(imageloc)
+        face_locations = face_recognition.face_locations(image1,model='cnn')
+    except:
+        print "Failure of Deep Learning"
+        image1 = face_recognition.load_image_file(imageloc)
+        face_locations = face_recognition.face_locations(image1,model='hog')
+
+
+    try:
+        y = face_recognition.load_image_file(imageloc)
+        y = face_recognition.face_encodings(y, face_locations, 2)[0]
+    except:
+        y = []
+
+
+    print ("Encoding Faces")
+
+
+    for x in tqdm(range(len(available_files))):
+        try:
+            image_file =  face_recognition.load_image_file('../Photoproject/faces/nonclustered/'+available_files[x])
+            data.append(face_recognition.face_encodings(image_file)[0])
+            names.append(available_files[x])
+        except:
+            badfiles.append(available_files[x])
+    
+
+    resultant_list = []
+    
+    print ("Comparing Faces")
+    for z in (range(len(data))):
+        try:  
+            results = face_recognition.face_distance([y], data[z])
+        except:
+            continue
+        if results <= threshold:
+            print names[z]
+            resultant_list.append(names[z])
+        writer.writerow([image,names[z],str(results[0])])
+    
+    print ("Number of Bad Faces ", len(badfiles))
+    return resultant_list

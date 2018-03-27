@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    
+    <title>PhotoProject</title>
+
+    <!-- Bootstrap Core CSS - Uses Bootswatch Flatly Theme: http://bootswatch.com/flatly/ -->
+    <link href="static/tweetbot/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="static/tweetbot/css/freelancer.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="static/tweetbot/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body id="page-top" class="index">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#page-top">PhotoProject</a></div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="#page-top">Home</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="#about">About PhotoProject</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="#application">The Application</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <img class="img-responsive" src="static/tweetbot/img/logo.png" alt="">
+                    <div class="intro-text">
+						<hr style = "background-color:#FFFFFF; border-width:0; color:#000000; height:7px; lineheight:10; display: inline-block; text-align: left; width:72%;" />
+                    </div>
+                    <form action = "http://10.146.140.197:81/upload" method = "POST" 
+         enctype = "multipart/form-data">
+                    <input type="file" name="file" accept="image/*" id="capture"> 
+                                    <br><input class="btn btn-lg btn-outline fa-bold" type="submit" value="SCAN NOW">
+      </form>
+
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Footer -->
+    <footer class="text-center">
+        <div class="footer-above">
+            <div class="container">
+                <div class="row">
+                    <div class="footer-col col-md-4">
+                        <h3>Location</h3>
+                        <p>New Delhi, India</p>
+                    </div>
+                    <div class="footer-col col-md-4">
+                        <h3>Around the Web</h3>
+                        <ul class="list-inline">
+                            <li>
+                                <a href="https://www.facebook.com/pvachher" class="btn-social btn-outline"><b> FB </b></a>
+                            </li>
+                            <li>
+                                <a href="http://twitter.com/pvachher" class="btn-social btn-outline"><b> T </b></a>
+                            </li>
+                            <li>
+                                <a href="https://www.youtube.com/channel/UCRDrSCCeKAt2uEiSAFcXamg" class="btn-social btn-outline"><b> YT </b></a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/pvachher" class="btn-social btn-outline"><b>GIT</b></a>
+                            </li>
+                            <li>
+                                <a href="https://in.linkedin.com/in/prateek-vachher-6a306216" class="btn-social btn-outline"><b> L </b></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="footer-col col-md-4">
+                        <h3>About Me</h3>
+                        <p>I'm Prateek Vachher; Coding Freak and Gadget Lover. I'm in Grade 12 at Amity International School, Saket</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-below">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        Copyright &copy; Prateek Vachher 2016
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
+    <div class="scroll-top page-scroll visible-xs visible-sm">
+        <a class="btn btn-primary" href="#page-top">
+            <i class="fa fa-chevron-up"></i>
+        </a>
+    </div>
+
+    <!-- jQuery -->
+    <script src="static/tweetbot/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="static/tweetbot/js/bootstrap.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+    <script src="static/tweetbot/js/classie.js"></script>
+    <script src="static/tweetbot/js/cbpAnimatedHeader.js"></script>
+
+    <!-- Contact Form JavaScript -->
+    <script src="static/tweetbot/js/jqBootstrapValidation.js"></script>
+    <script src="static/tweetbot/js/contact_me.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="static/tweetbot/js/freelancer.js"></script>
+
+</body>
+
+</html>
