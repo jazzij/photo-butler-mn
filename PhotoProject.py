@@ -227,7 +227,7 @@ def eval_against_face(image,imageloc):
     writer = csv.writer(ifile)
     data,names,badfiles = [],[],[]
     counter = 0
-    threshold = 0.50
+    threshold = 0.47
 
     # Writing Initial Row to CSV
     writer.writerow(['Picture1','Picture2','Distance'])
@@ -272,7 +272,7 @@ def eval_against_face(image,imageloc):
 
     for x in tqdm(range(len(available_files))):
         try:
-            image_file =  face_recognition.load_image_file('../Photoproject/faces/nonclustered/'+available_files[x])
+            image_file =  face_recognition.load_image_file('../faces/nonclustered/'+available_files[x])
             data.append(face_recognition.face_encodings(image_file)[0])
             names.append(available_files[x])
         except:
