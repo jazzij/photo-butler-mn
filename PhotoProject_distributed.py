@@ -29,14 +29,14 @@ def save_find_faces(filename):
     face_locations = face_recognition.face_locations(y,model='hog')
     y = face_recognition.face_encodings(y,face_locations)
 
-    #img = Image.open(filename)
+    img = Image.open(filename)
     counter = 0
-    #img2 = ""
+    img2 = ""
     for x in face_locations:
-        #img2 = img.crop((x[3],x[0],x[1],x[2]))
+        img2 = img.crop((x[3],x[0],x[1],x[2]))
         new_filename = str(counter)+filename
-        #img2.save(new_filename)
-        #send_file_mongo(new_filename,new_filename,'faces')
+        img2.save(new_filename)
+        send_file_mongo(new_filename,new_filename,'faces')
         
         c = open(new_filename+'.dat','wb')
         pickle.dump(y[counter],c)
@@ -45,13 +45,13 @@ def save_find_faces(filename):
         send_file_mongo(new_filename+'.dat',new_filename+'.dat','meta')
 
         os.remove(new_filename+'.dat')
-        #os.remove(new_filename)
+        os.remove(new_filename)
         counter += 1
 
     print ("Successfully Completed File "+filename)
-    #del img
+    del img
     del y
-    #os.remove(filename)
+    os.remove(filename)
     gc.collect()
             
 # ---------------------------------------------------#
@@ -59,86 +59,6 @@ def save_find_faces(filename):
 def line_split(N, K=1):
     length = len(N)
     return [N[i*length/K:(i+1)*length/K] for i in range(K)]
-
-# ---------------------------------------------------#
-def save_find_faces_all():
-    try:
-        print ("")
-        print ("== Detecting Faces in Images ==")
-        print ("")
-        pool = []
-        dat = (os.listdir("./pictures"))
-        chunked = line_split(dat,cpu_count()-1)
-        for y in chunked:         
-            p1 = Process(target=save_find_faces, args=(y,"./pictures/",))
-            pool.append(p1)
-        for y in pool:
-            y.start()
-        print ("Processing Started")
-        for y in pool:
-            y.join()
-        print ("Successfully Identified Faces")
-        print ("")
-        return True
-    except:
-        print ("Found Error, Crash Error Code 101")
-        return False
-
-# ---------------------------------------------------#
-
-''' 
-    Compare distance between two faces to see if its the same person. 
-    .45 is optimal threshold (per face rec library, referencing CMU OpenFace algorithm)
-    Below .45 means its the same person, and above means its not. 
-'''
-@app.task
-def compare_faces(index):
-    try:
-        file_directory = list_directory_mongo('faces')
-        bad_pics = get_list_bad_mongo()
-        stored = os.listdir('./')
-
-        face1 = file_directory[index]
-        if face1 not in bad_pics:
-            try:
-                if face1 not in stored:
-                    get_file_mongo(face1,'faces')
-
-                picture_of_me = face_recognition.load_image_file(face1)
-                my_face_encoding = face_recognition.face_encodings(picture_of_me)[0]
-
-            except:
-                remove_image_mongo(face1,'faces')
-                return "Face1 is bad", face1
-
-        else:
-            return "Face1 is bad", face1
-
-        for y in tqdm(range(index+1,len(file_directory))):
-            bad_pics = get_list_bad_mongo()
-            face2 = file_directory[y]
-
-            if face2 not in bad_pics:
-                try:
-                    if face2 not in stored:
-                        get_file_mongo(face2,'faces')
-                    unknown_picture = face_recognition.load_image_file(face2)
-                    unknown_face_encoding = face_recognition.face_encodings(unknown_picture)[0]
-                except:
-                    remove_image_mongo(face2,'faces')
-                    #print ("Face2 is bad", face2)
-                    continue
-            else:
-                #print ("Face2 is bad", face2)
-                continue
-            results = face_recognition.face_distance([my_face_encoding], unknown_face_encoding) 
-            store_comparision_value(face1,face2,results[0])
-            #print "Successfully Completed Files "+ face1+" "+face2
-
-    except Exception as e:
-        print (e)
-        print ("Found Error, Crash Error Code 102")
-
 # ---------------------------------------------------#
 @app.task
 def compare_all_faces():
@@ -147,23 +67,23 @@ def compare_all_faces():
         data,names= [],[]
 
         # Process all files in nonclustered
-        available_files = list_directory_mongo('faces')
+        available_files = list_directory_mongo('meta')
 
         print ("")
         print ("== Comparing Faces ==")
         print ("")
         print ("-------------------------------Getting Faces------------------------")
-        get_all_images_mongo('faces/','faces')
+        get_all_images_mongo('meta/','meta')
         print ("-------------------------------Encoding Faces------------------------")
+        
         # Encoding all files to memory
         for x in tqdm(range(len(available_files))):
-            try:
-                image_file =  face_recognition.load_image_file('./faces/'+available_files[x])
-                data.append(face_recognition.face_encodings(image_file)[0])
-                names.append(available_files[x])
-            except:
-                remove_image_mongo(x,'faces')
+            data.append(pickle.load(open('./meta/'+available_files[x],'rb')))
+            names.append(available_files[x][:-4])
+
+
         gc.collect()
+        
         # Comparing the encoded files
         print ("-------------------------------Comparing Faces------------------------")
         for y in tqdm(range(len(data))):
