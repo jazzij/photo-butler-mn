@@ -45,13 +45,13 @@ def save_find_faces(filename):
         send_file_mongo(new_filename+'.dat',new_filename+'.dat','meta')
 
         os.remove(new_filename+'.dat')
-        os.remove(new_filename)
+        #os.remove(new_filename)
         counter += 1
 
     print ("Successfully Completed File "+filename)
     del img
     del y
-    os.remove(filename)
+    #os.remove(filename)
     gc.collect()
             
 # ---------------------------------------------------#

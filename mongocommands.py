@@ -28,7 +28,7 @@ def send_file_mongo(fileloc,filename,database):
             
             if filename.split('.')[-1].lower()=='jpg' or filename.split('.')[-1].lower()=='jpeg' or filename.split('.')[-1].lower()=='png':
                 foo = Image.open(fileloc)
-                basewidth = 1500
+                basewidth = 1000
                 wpercent = (basewidth / float(foo.size[0]))
                 hsize = int((float(foo.size[1]) * float(wpercent)))
                 foo = foo.resize((basewidth, hsize), Image.ANTIALIAS)
