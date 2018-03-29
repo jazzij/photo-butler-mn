@@ -1,5 +1,5 @@
 # Import Statements
-from PhotoProject_distributed import compare_faces, compare_all_faces
+from PhotoProject_distributed import compare_all_faces
 from mongocommands import *
 from celery.result import AsyncResult
 import os, time
