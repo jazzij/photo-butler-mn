@@ -49,7 +49,7 @@ def save_find_faces(filename):
         counter += 1
 
     print ("Successfully Completed File "+filename)
-    del img
+    #del img
     del y
     #os.remove(filename)
     gc.collect()
