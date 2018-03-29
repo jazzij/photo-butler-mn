@@ -27,7 +27,7 @@ def save_find_faces(filename):
 
     y = face_recognition.load_image_file(filename)
     face_locations = face_recognition.face_locations(y,model='hog')
-    y = face_recognition.face_encodings(y,face_locations,3)
+    y = face_recognition.face_encodings(y,face_locations)
 
     img = Image.open(filename)
     counter = 0
@@ -49,6 +49,8 @@ def save_find_faces(filename):
         counter += 1
 
     print ("Successfully Completed File "+filename)
+    del img
+    del y
     os.remove(filename)
     gc.collect()
             
