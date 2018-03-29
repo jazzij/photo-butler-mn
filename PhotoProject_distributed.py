@@ -50,10 +50,6 @@ def save_find_faces(filename):
 
     print ("Successfully Completed File "+filename)
     os.remove(filename)
-    del image
-    del face_locations
-    del img
-    del img2
     gc.collect()
             
 # ---------------------------------------------------#
