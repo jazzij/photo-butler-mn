@@ -29,14 +29,14 @@ def save_find_faces(filename):
     face_locations = face_recognition.face_locations(y,model='hog')
     y = face_recognition.face_encodings(y,face_locations)
 
-    img = Image.open(filename)
+    #img = Image.open(filename)
     counter = 0
-    img2 = ""
+    #img2 = ""
     for x in face_locations:
-        img2 = img.crop((x[3],x[0],x[1],x[2]))
+        #img2 = img.crop((x[3],x[0],x[1],x[2]))
         new_filename = str(counter)+filename
-        img2.save(new_filename)
-        send_file_mongo(new_filename,new_filename,'faces')
+        #img2.save(new_filename)
+        #send_file_mongo(new_filename,new_filename,'faces')
         
         c = open(new_filename+'.dat','wb')
         pickle.dump(y[counter],c)
