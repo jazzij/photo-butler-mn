@@ -23,8 +23,12 @@ app = Celery('tasks',backend=backend_url, broker=broker_url)
 @app.task
 def save_find_faces(filename):
     get_file_mongo(filename,'photo')
-    image = face_recognition.load_image_file(filename)
-    face_locations = face_recognition.face_locations(image)
+
+
+    y = face_recognition.load_image_file(filename)
+    face_locations = face_recognition.face_locations(y,model='hog')
+    y = face_recognition.face_encodings(y,face_locations,3)
+
     img = Image.open(filename)
     counter = 0
     img2 = ""
@@ -33,8 +37,17 @@ def save_find_faces(filename):
         new_filename = str(counter)+filename
         img2.save(new_filename)
         send_file_mongo(new_filename,new_filename,'faces')
+        
+        c = open(new_filename+'.dat','wb')
+        pickle.dump(y[counter],c)
+        c.close()
+
+        send_file_mongo(new_filename+'.dat',new_filename+'.dat','meta')
+
+        os.remove(new_filename+'.dat')
         os.remove(new_filename)
         counter += 1
+        
     print ("Successfully Completed File "+filename)
     os.remove(filename)
     del image
