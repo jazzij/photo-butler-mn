@@ -10,7 +10,7 @@ from multiprocessing import Process, Pool, cpu_count
     Naming convention is [x][photoID].jpg (ie 01138, 11138, 21138)
 '''
 
-def save_find_faces(filename, accessor=""):
+def save_find_faces(filename, accessor="",accessor2="faces"):
 
     try:
 
@@ -30,9 +30,9 @@ def save_find_faces(filename, accessor=""):
             for x in face_locations:
                 
                 img2 = img.crop((x[3],x[0],x[1],x[2]))
-                img2.save('faces/nonclustered/'+str(counter)+z)
+                img2.save(accessor2+'/nonclustered/'+str(counter)+z)
 
-                c = open('faces/meta/'+str(counter)+z+'.dat','wb')
+                c = open(accessor2+'/meta/'+str(counter)+z+'.dat','wb')
                 pickle.dump(y[counter],c)
                 c.close()
                 
@@ -53,7 +53,7 @@ def line_split(N, K=1):
 
 # ---------------------------------------------------#
 
-def save_find_faces_all():
+def save_find_faces_all(location_pictures = './pictures',location_meta='./faces/meta',accessor2='faces'):
 
     try:
 
@@ -62,8 +62,8 @@ def save_find_faces_all():
         print ("")
 
         pool, dat = [], []
-        to_be_processed = (os.listdir("./pictures"))
-        exists = [x[1:] for x in os.listdir("./faces/meta")]
+        to_be_processed = (os.listdir(location_pictures))
+        exists = [x[1:] for x in os.listdir(location_meta)]
 
         for x in to_be_processed:
 
@@ -75,13 +75,13 @@ def save_find_faces_all():
         chunked = line_split(dat,cpu_count()-1)
 
         for y in chunked:         
-            p1 = Process(target=save_find_faces, args=(y,"./pictures/",))
+            p1 = Process(target=save_find_faces, args=(y,location_pictures,accessor2,))
             pool.append(p1)
 
         for y in pool:
             y.start()
 
-        print ("Processing Started")
+        print ("Processing Started for "+ str(len(dat))+" pictures!")
 
         for y in pool:
             y.join()
@@ -231,19 +231,17 @@ def cluster_faces(threshold=0.45):
 # ---------------------------------------------------#
 
 def eval_against_face(image,imageloc):
+
     # Initializing Variables and Data Types
-    ifile  = open('facedata'+image+'.csv', "wb")
-    writer = csv.writer(ifile)
     data,names,badfiles = [],[],[]
     counter = 0
     threshold = 0.47
 
-    # Writing Initial Row to CSV
-    writer.writerow(['Picture1','Picture2','Distance'])
 
     # Process all files in nonclustered
-    available_files = os.listdir('../faces/nonclustered/')
-
+    available_files = os.listdir('../faces/meta/')
+    available_files.remove('.DS_Store')
+    
     print ("")
     print ("== Comparing Faces ==")
     print ("")
@@ -253,53 +251,54 @@ def eval_against_face(image,imageloc):
 
         baseheight = 500
         wpercent = (baseheight / float(foo.size[1]))
+        
         bsize = int((float(foo.size[0]) * float(wpercent)))
 
         foo = foo.resize((bsize,baseheight), Image.ANTIALIAS)
+
         foo = foo.rotate(-90)
+
         foo = foo.transpose(Image.FLIP_LEFT_RIGHT)
 
         foo.save(imageloc,optimize=True)
 
         image1 = face_recognition.load_image_file(imageloc)
         face_locations = face_recognition.face_locations(image1,model='cnn')
+
+        
     except:
         print "Failure of Deep Learning"
+        
         image1 = face_recognition.load_image_file(imageloc)
         face_locations = face_recognition.face_locations(image1,model='hog')
 
 
     try:
         y = face_recognition.load_image_file(imageloc)
-        y = face_recognition.face_encodings(y, face_locations, 2)[0]
+        y = face_recognition.face_encodings(y, face_locations, 3)[0]
+
     except:
         y = []
 
 
     print ("Encoding Faces")
 
-
     for x in tqdm(range(len(available_files))):
-        try:
-            image_file =  face_recognition.load_image_file('../faces/nonclustered/'+available_files[x])
-            data.append(face_recognition.face_encodings(image_file)[0])
-            names.append(available_files[x])
-        except:
-            badfiles.append(available_files[x])
-    
+        print available_files[x]
+        data.append(pickle.load(open('../faces/meta/'+available_files[x],'rb')))
+        names.append(available_files[x][:-4])
 
     resultant_list = []
-    
+
     print ("Comparing Faces")
-    for z in (range(len(data))):
+    for z in tqdm(range(len(data))):
         try:  
             results = face_recognition.face_distance([y], data[z])
         except:
             continue
+
         if results <= threshold:
             print names[z]
-            resultant_list.append(names[z])
-        writer.writerow([image,names[z],str(results[0])])
-    
-    print ("Number of Bad Faces ", len(badfiles))
+            copyfile("../pictures/"+names[z][1:], "../web-system/static/"+names[z][1:])
+            resultant_list.append(names[z][1:])
     return resultant_list
