@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 # ---------------------------------------------------#
 
-mongo = "169.254.6.100"            # IP Address of MongoDB Host
+mongo = "10.146.140.197"            # IP Address of MongoDB Host
 
 # ---------------------------------------------------#
 
