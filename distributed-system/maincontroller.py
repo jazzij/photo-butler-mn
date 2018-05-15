@@ -1,5 +1,5 @@
 print ("-------------------Starting Face Identification-------------------")
-import startcluster
+import loadsequence1
 print ("-------------------Starting Face Distance-------------------")
-import startcluster1
+import loadsequence2
 print ("-------------------Done with Image Analysis-------------------")

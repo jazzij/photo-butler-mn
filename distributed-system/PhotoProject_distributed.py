@@ -9,9 +9,9 @@ from celery import Celery
 
 # ---------------------------------------------------#
 
-address = "raspberrypi5-umh.cs.umn.edu"
-broker_url = 'amqp://prateek:Welcome123@'+address+':5672/myvhost'
-backend_url = 'rpc://prateek:Welcome123@'+address+':5672/myvhost'
+address = "raspberrypi5-umh.cs.umn.edu"                             # Replace with RabbitMQ Instance IP Address
+broker_url = 'amqp://username:password@'+address+':5672/myvhost'    # Replace username and password with RabbitMQ username and RabbitMQ password
+backend_url = 'rpc://username:password@'+address+':5672/myvhost'    # Replace username and password with RabbitMQ username and RabbitMQ password
 
 app = Celery('tasks',backend=backend_url, broker=broker_url)
 
@@ -21,7 +21,7 @@ app = Celery('tasks',backend=backend_url, broker=broker_url)
     Naming convention is [x][photoID].jpg (ie 01138, 11138, 21138)
 '''
 @app.task
-def save_find_faces(filename):
+def save_find_faces(filename):      # Detecting, Processing and Sending the processed face data back to mongodb
     get_file_mongo(filename,'photo')
 
 
@@ -56,12 +56,14 @@ def save_find_faces(filename):
             
 # ---------------------------------------------------#
 
-def line_split(N, K=1):
+def line_split(N, K=1):         # Split array N into K halves
     length = len(N)
     return [N[i*length/K:(i+1)*length/K] for i in range(K)]
+
 # ---------------------------------------------------#
+
 @app.task
-def compare_all_faces():
+def compare_all_faces():        # Comparing and detecting similarity in faces in all processed faces available in MongoDB
     try:
         # Initializing Variables and Data Types
         data,names= [],[]
@@ -101,7 +103,7 @@ def compare_all_faces():
 
 # ---------------------------------------------------#
 
-def check_exist(branch,file1):
+def check_exist(branch,file1):      # Check existence of file1 in subset of branch
     for x in branch:
         if file1 in x:
             return True
@@ -109,7 +111,7 @@ def check_exist(branch,file1):
 
 # ---------------------------------------------------#
 
-def check_existance(branch,to_search1,to_search2):
+def check_existance(branch,to_search1,to_search2):      # Check existence of to_search1 or to_search2 in subset of branch
     for x in range(len(branch)):
         if to_search1 in branch[x] or to_search2 in branch[x]:
             return (x)
