@@ -5,7 +5,9 @@ Summer 2018
 3) Maintain similarity in variable naming with prior posted code, unless you see some egregious errors.
 """
 
-import face_recognition, cv2
+import face_recognition, cv2, os
+from tqdm import tqdm
+from shutil import move
 
 # Highlight faces in a photo (Lily)
 # Draws red rectangles around each identified face
@@ -27,3 +29,21 @@ def highlight_faces(imgPath):
     cv2.imshow("highlighted faces", cvimg)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+
+# Sort out photos without faces (Lily)
+# Moves faces without faces into a directory named "sorted_out"
+# Parameters: path of directory containing a set of photos (defaults to
+# './pictures/'
+def sort_out(dirPath='./pictures/'):
+    # Make sure the directory path ends in a slash
+    if dirPath[-1] != '/':
+        dirPath += '/'
+    # Create the sorted_out folder if it doesn't already exist
+    if not os.path.isdir("./sorted_out"):
+        os.mkdir("./sorted_out")
+    for file in tqdm(os.listdir(dirPath)):
+        imgPath = dirPath + file
+        img = face_recognition.load_image_file(imgPath)
+        face_locations = face_recognition.face_locations(img)
+        if len(face_locations) == 0:
+            move(imgPath, './sorted_out/')
