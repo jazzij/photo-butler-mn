@@ -7,7 +7,7 @@ Summer 2018
 
 import face_recognition, cv2, os
 from tqdm import tqdm
-from shutil import move
+from shutil import move, copy
 
 # Highlight faces in a photo (Lily)
 # Draws red rectangles around each identified face
@@ -47,3 +47,31 @@ def sort_out(dirPath='./pictures/'):
         face_locations = face_recognition.face_locations(img)
         if len(face_locations) == 0:
             move(imgPath, './sorted_out/')
+
+# Find photos of a person (Lily)
+# Given a photo of just one person, copies all photos containing that person
+# into a directory 'found_person'
+# Parameters: path of subject's photo; path of directory containing a set of
+# photos (defaults to './pictures/')
+def find_person(subjectPath, dirPath='./pictures/'):
+    # Make sure the directory path ends in a slash
+    if dirPath[-1] != '/':
+        dirPath += '/'
+    # Create the sorted_out folder if it doesn't already exist
+    if not os.path.isdir('./found_person/'):
+        os.mkdir('./found_person/')
+    subject = face_recognition.load_image_file(subjectPath)
+    # The subject's face encoding should be the first & only item in the list
+    subject_encoding = face_recognition.face_encodings(subject)[0]
+    for file in tqdm(os.listdir(dirPath)):
+        testPath = dirPath + file
+        test = face_recognition.load_image_file(testPath)
+        test_encodings = face_recognition.face_encodings(test)
+        distances = face_recognition.face_distance(test_encodings, \
+        subject_encoding)
+        for d in distances:
+            # In the original github PhotoProject.py, 0.45 is the optimal
+            # threshold, but I found that a little higher worked better for me
+            if d <= 0.51:
+                copy(testPath, './found_person/')
+                break
