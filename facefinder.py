@@ -7,7 +7,7 @@ Summer 2018
 
 import face_recognition, cv2, os
 from tqdm import tqdm
-from shutil import move, copy
+from shutil import move, copy, rmtree
 
 # Highlight faces in a photo (Lily)
 # Draws red rectangles around each identified face
@@ -52,7 +52,7 @@ def sort_out(dirPath='./pictures/'):
 # Given a photo of just one person, copies all photos containing that person
 # into a directory 'found_person'
 # Parameters: path of subject's photo; path of directory containing a set of
-# photos (defaults to './pictures/')
+# photos
 def find_person(subjectPath, dirPath='./pictures/'):
     # Make sure the directory path ends in a slash
     if dirPath[-1] != '/':
@@ -75,3 +75,18 @@ def find_person(subjectPath, dirPath='./pictures/'):
             if d <= 0.51:
                 copy(testPath, './found_person/')
                 break
+
+# Make clean (Lily)
+# Undo any changes made by other functions, to easily reset for testing - feel
+# free to change this as more functions are added!
+# Parameters: Path to the directory containing a set of photos
+def make_clean(dirPath='./pictures/'):
+    if dirPath[-1] != '/':
+        dirPath += '/'
+    if os.path.isdir('./sorted_out/'):
+        for picture in os.listdir('./sorted_out/'):
+            if picture[0] != '.':
+                move('./sorted_out/' + picture, dirPath)
+        os.rmdir('./sorted_out/')
+    if os.path.isdir('./found_person/'):
+        rmtree('./found_person/')
