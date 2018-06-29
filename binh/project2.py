@@ -2,10 +2,10 @@ import os
 import face_recognition
 def or_operator():
     picture = input("Enter the name of the file: ")
-    img = face_recognition.load_image_file(picture)
-    img_encoding = face_recognition.face_encodings(img)
+    im = face_recognition.load_image_file(picture)
+    original_img = face_recognition.face_encodings(im)
     res = []
-    for i in img_encoding:
+    for i in original_img:
         for j in os.listdir():
             if j != "project2.py":
                 img = face_recognition.load_image_file(j)
@@ -17,10 +17,10 @@ def or_operator():
     return res
 def not_operator():
     picture = input("Enter the name of the file: ")
-    img = face_recognition.load_image_file(picture)
-    img_encoding = face_recognition.face_encodings(img)
+    im = face_recognition.load_image_file(picture)
+    original_img = face_recognition.face_encodings(im)
     res = []
-    for i in img_encoding:
+    for i in original_img:
         for j in os.listdir():
             if j != "project2.py":
                 img = face_recognition.load_image_file(j)
