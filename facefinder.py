@@ -133,3 +133,38 @@ def find_and(setPath, dirPath='./pictures/'):
                     break
         if False not in switchboard:
             copy(testPath, './find_and/')
+
+# Find set AND, version 2 (Lily)
+# Another version of the function above, except it takes a list of paths to
+# photos of just 1 person each - e.g., for pictures of X and Y, subjectList
+# would be ['./pictures/X.jpg', './pictures/Y.jpg']
+# I found that this version is more accurate
+def find_and2(subjectList, dirPath='./pictures/'):
+    if dirPath[-1] != '/':
+        dirPath += '/'
+    if not os.path.isdir('./find_and/'):
+        os.mkdir('./find_and/')
+    all_subject_encodings = []
+    for subject in subjectList:
+        subjImg = face_recognition.load_image_file(subject)
+        all_subject_encodings += face_recognition.face_encodings(subjImg)
+    if len(all_subject_encodings) == 0:
+        print('No subject faces found.')
+        return
+    print("{} subject faces found.".format(len(all_subject_encodings)))
+    for picture in tqdm(os.listdir(dirPath)):
+        switchboard = [False] * len(all_subject_encodings)
+        testPath = dirPath + picture
+        testImg = face_recognition.load_image_file(testPath)
+        testEncodings = face_recognition.face_encodings(testImg)
+        if len(testEncodings) == 0:
+            continue
+        for i in range(len(all_subject_encodings)):
+            distances = face_recognition.face_distance(testEncodings, \
+            all_subject_encodings[i])
+            for d in distances:
+                if d <= 0.51:
+                    switchboard[i] = True
+                    break
+        if False not in switchboard:
+            copy(testPath, './find_and/')
