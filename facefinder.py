@@ -96,74 +96,37 @@ def make_clean(dirPath='./pictures/'):
         rmtree('./find_xor/')
 
 # Find set AND (Lily)
-# Given a photo with a set of people, finds all photos that contain every person
-# in the set and copies them into a separate directory.
+# Merged version (version 3)
+# Given a list of photos, finds all photos that contain every person in those
+# photos and copies them into a separate directory.
+# The photos in the list you pass in can have any number of people in them.
 # I haven't been able to get 100% accuracy even with a higher threshold; it
 # might be that the pictures I'm using to test are too different?
-# Parameters: path to the photo containing the subjects; path to the directory
-# containing a set of photos
-def find_and(setPath, dirPath='./pictures/'):
+# Parameters: List of paths to subject photos; path to the directory containing
+# a set of photos.
+def find_and(subjectPhotoList, dirPath='./pictures/'):
     if dirPath[-1] != '/':
         dirPath += '/'
     if not os.path.isdir('./find_and/'):
         os.mkdir('./find_and/')
-    setImg = face_recognition.load_image_file(setPath)
-    setEncodings = face_recognition.face_encodings(setImg)
-    if len(setEncodings) == 0:
-        print("No faces were found in the set.")
-        return
-    print("{} faces were found in the set.".format(len(setEncodings)))
-    for picture in tqdm(os.listdir(dirPath)):
-        # Creates a list of boolean values for each test photo. Each boolean
-        # represents one of the faces we're looking for. Once it's found, it
-        # flips to True. Once every value in the switchboard is True, we know
-        # the photo matches the set we're looking for.
-        switchboard = [False] * len(setEncodings)
-        testPath = dirPath + picture
-        testImg = face_recognition.load_image_file(testPath)
-        testEncodings = face_recognition.face_encodings(testImg)
-        if len(testEncodings) == 0:
-            continue
-        # For each person in the subject photo, check if they are in the test
-        # photo
-        for i in range(len(setEncodings)):
-            distances = face_recognition.face_distance(testEncodings, \
-            setEncodings[i])
-            for d in distances:
-                if d <= 0.51:
-                    switchboard[i] = True
-                    break
-        if False not in switchboard:
-            copy(testPath, './find_and/')
-
-# Find set AND, version 2 (Lily)
-# Another version of the function above, except it takes a list of paths to
-# photos of just 1 person each - e.g., for pictures of X and Y, subjectList
-# would be ['./pictures/X.jpg', './pictures/Y.jpg']
-# I found that this version is more accurate
-def find_and2(subjectList, dirPath='./pictures/'):
-    if dirPath[-1] != '/':
-        dirPath += '/'
-    if not os.path.isdir('./find_and/'):
-        os.mkdir('./find_and/')
-    all_subject_encodings = []
-    for subject in subjectList:
-        subjImg = face_recognition.load_image_file(subject)
-        all_subject_encodings += face_recognition.face_encodings(subjImg)
-    if len(all_subject_encodings) == 0:
+    subject_encodings = []
+    for subjPhoto in subjectPhotoList:
+        subjImg = face_recognition.load_image_file(subjPhoto)
+        subject_encodings += face_recognition.face_encodings(subjImg)
+    if len(subject_encodings) == 0:
         print('No subject faces found.')
         return
-    print("{} subject faces found.".format(len(all_subject_encodings)))
+    print("{} subject faces found.".format(len(subject_encodings)))
     for picture in tqdm(os.listdir(dirPath)):
-        switchboard = [False] * len(all_subject_encodings)
+        switchboard = [False] * len(subject_encodings)
         testPath = dirPath + picture
         testImg = face_recognition.load_image_file(testPath)
         testEncodings = face_recognition.face_encodings(testImg)
         if len(testEncodings) == 0:
             continue
-        for i in range(len(all_subject_encodings)):
+        for i in range(len(subject_encodings)):
             distances = face_recognition.face_distance(testEncodings, \
-            all_subject_encodings[i])
+            subject_encodings[i])
             for d in distances:
                 if d <= 0.51:
                     switchboard[i] = True
@@ -172,18 +135,18 @@ def find_and2(subjectList, dirPath='./pictures/'):
             copy(testPath, './find_and/')
 
 # Find XOR (Lily)
-# Given a list of photos of individual people, finds photos that contain exactly
-# one of those people and copies them into a separate directory.
+# Given a list of photos, finds photos that contain exactly one of the people in
+# the photos and copies them into a separate directory.
 # Parameters: List of paths to subject photos; path to the directory containing
-# a set of photos
-def find_xor(subjectList, dirPath='./pictures/'):
+# a set of photos.
+def find_xor(subjectPhotoList, dirPath='./pictures/'):
     if dirPath[-1] != '/':
         dirPath += '/'
     if not os.path.isdir('./find_xor/'):
         os.mkdir('./find_xor/')
     subject_encodings = []
-    for subject in subjectList:
-        subjImg = face_recognition.load_image_file(subject)
+    for subjPhoto in subjectPhotoList:
+        subjImg = face_recognition.load_image_file(subjPhoto)
         subject_encodings += face_recognition.face_encodings(subjImg)
     if len(subject_encodings) == 0:
         print('No subject faces found.')
