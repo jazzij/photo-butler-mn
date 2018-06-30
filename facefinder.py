@@ -92,6 +92,8 @@ def make_clean(dirPath='./pictures/'):
         rmtree('./found_person/')
     if os.path.isdir('./find_and/'):
         rmtree('./find_and/')
+    if os.path.isdir('./find_xor/'):
+        rmtree('./find_xor/')
 
 # Find set AND (Lily)
 # Given a photo with a set of people, finds all photos that contain every person
@@ -169,4 +171,41 @@ def find_and2(subjectList, dirPath='./pictures/'):
         if False not in switchboard:
             copy(testPath, './find_and/')
 
-# adding a comment to test new branch
+# Find XOR (Lily)
+# Given a list of photos of individual people, finds photos that contain exactly
+# one of those people and copies them into a separate directory.
+# Parameters: List of paths to subject photos; path to the directory containing
+# a set of photos
+def find_xor(subjectList, dirPath='./pictures/'):
+    if dirPath[-1] != '/':
+        dirPath += '/'
+    if not os.path.isdir('./find_xor/'):
+        os.mkdir('./find_xor/')
+    subject_encodings = []
+    for subject in subjectList:
+        subjImg = face_recognition.load_image_file(subject)
+        subject_encodings += face_recognition.face_encodings(subjImg)
+    if len(subject_encodings) == 0:
+        print('No subject faces found.')
+        return
+    print("{} subject faces found.".format(len(subject_encodings)))
+    for picture in tqdm(os.listdir(dirPath)):
+        # Just keeps track of how many of the subjects are found in the photo.
+        # The count has to be exactly one to be included.
+        foundCount = 0;
+        testPath = dirPath + picture
+        testImg = face_recognition.load_image_file(testPath)
+        testEncodings = face_recognition.face_encodings(testImg)
+        if len(testEncodings) == 0:
+            continue
+        for subj in subject_encodings:
+            distances = face_recognition.face_distance(testEncodings, \
+            subj)
+            for d in distances:
+                if d <= 0.51:
+                    foundCount += 1
+                    break
+            if foundCount > 1:
+                break
+        if foundCount == 1:
+            copy(testPath, './find_xor/')
