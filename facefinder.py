@@ -94,6 +94,8 @@ def make_clean(dirPath='./pictures/'):
         rmtree('./find_and/')
     if os.path.isdir('./find_xor/'):
         rmtree('./find_xor/')
+    if os.path.isdir('./no_scrubs/'):
+        rmtree('./no_scrubs/')
 
 # Find set AND (Lily)
 # Merged version (version 3)
@@ -199,3 +201,43 @@ def find_and_highlight(subjectPath, groupPath):
     cv2.imshow('Image', cvimg)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+
+# 'Scrub out' the face of a person in a group of photos (Lily)
+# Given a photo of just one person (a scrub), blocks out that person's face in
+# every photo in a given directory and copies the resulting photos into a new
+# directory.
+# Parameters: path to scrub photo; path to the directory containing a set of
+# photos.
+def scrub(scrubPath, dirPath='./pictures/'):
+    if dirPath[-1] != '/':
+        dirPath += '/'
+    if not os.path.isdir('./no_scrubs/'):
+        os.mkdir('./no_scrubs/')
+    # Load the scrub photo and get scrub encoding
+    scrub = face_recognition.load_image_file(scrubPath)
+    scrubEncoding = face_recognition.face_encodings(scrub)[0]
+    # Iterate through each photo
+    for file in tqdm(os.listdir(dirPath)):
+        testPath = dirPath + file
+        test = face_recognition.load_image_file(testPath)
+        testEncodings = face_recognition.face_encodings(test)
+        # Get the distances and face locations of the test photo
+        distances = face_recognition.face_distance(testEncodings, scrubEncoding)
+        locations = face_recognition.face_locations(test)
+        found = False
+        for i in range(len(distances)):
+            if distances[i] <= 0.51:
+                # If the scrub is found, get that face location
+                top, right, bottom, left = locations[i]
+                # Load the image with openCV and draw a box on the face
+                cvimg = cv2.imread(testPath, 1)
+                cv2.rectangle(cvimg, (left, top), (right, bottom), (0,0,0), -1)
+                # Save the new image into the new directory
+                newPath = './no_scrubs/' + file
+                cv2.imwrite(newPath, cvimg)
+                found = True
+                break
+        # If the scrub is not in the photo, copy it to the new directory
+        # unchanged
+        if not found:
+            copy(testPath, './no_scrubs/')
