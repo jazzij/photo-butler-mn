@@ -172,3 +172,30 @@ def find_xor(subjectPhotoList, dirPath='./pictures/'):
                 break
         if foundCount == 1:
             copy(testPath, './find_xor/')
+
+# Find and highlight in a group photo (Lily)
+# Parameters: Path to photo of just one person, path to the group photo
+def find_and_highlight(subjectPath, groupPath):
+    # Get the encoding of the subject
+    subject = face_recognition.load_image_file(subjectPath)
+    subjectEncoding = face_recognition.face_encodings(subject)[0]
+    # Get the list of encodings in the group picture
+    group = face_recognition.load_image_file(groupPath)
+    groupEncodings = face_recognition.face_encodings(group)
+    # Get the distances of each face from the subject and the locations of
+    # each face
+    distances = face_recognition.face_distance(groupEncodings, subjectEncoding)
+    locations = face_recognition.face_locations(group)
+    # Load the image with openCV so we can draw on it
+    cvimg = cv2.imread(groupPath, 1)
+    # Iterate through the distances until one is below the threshold
+    for i in range(len(distances)):
+        if distances[i] <= 0.51:
+            # Get the face location and draw a rectangle
+            top, right, bottom, left = locations[i]
+            cv2.rectangle(cvimg, (left, top), (right, bottom), (0,0,255), 5)
+            break
+    # Show the image
+    cv2.imshow('Image', cvimg)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
