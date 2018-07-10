@@ -5,7 +5,7 @@ Summer 2018
 3) Maintain similarity in variable naming with prior posted code, unless you see some egregious errors.
 """
 
-import face_recognition, cv2, os
+import face_recognition, cv2, os, pickle
 from tqdm import tqdm
 from shutil import move, copy, rmtree
 
@@ -94,60 +94,115 @@ def make_clean(dirPath='./pictures/'):
         rmtree('./find_and/')
     if os.path.isdir('./find_xor/'):
         rmtree('./find_xor/')
+    if os.path.isdir('./no_scrubs/'):
+        rmtree('./no_scrubs/')
+    if os.path.isdir('./encodings/'):
+        rmtree('./encodings/')
 
 # Find set AND (Lily)
-# Merged version (version 3)
 # Given a list of photos, finds all photos that contain every person in those
 # photos and copies them into a separate directory.
 # The photos in the list you pass in can have any number of people in them.
-# I haven't been able to get 100% accuracy even with a higher threshold; it
-# might be that the pictures I'm using to test are too different?
 # Parameters: List of paths to subject photos; path to the directory containing
-# a set of photos.
-def find_and(subjectPhotoList, dirPath='./pictures/'):
+# a set of photos; boolean indicating whether photos in the directory have
+# already had their encodings saved using encode_all().
+def find_and(subjectPhotoList, dirPath='./pictures/', encoded=False):
     if dirPath[-1] != '/':
         dirPath += '/'
     if not os.path.isdir('./find_and/'):
         os.mkdir('./find_and/')
     subject_encodings = []
-    for subjPhoto in subjectPhotoList:
-        subjImg = face_recognition.load_image_file(subjPhoto)
-        subject_encodings += face_recognition.face_encodings(subjImg)
+    if encoded:
+        for subjPhoto in subjectPhotoList:
+            # Get just the name of the photo, not the full path
+            subjPhoto = subjPhoto.split('/')[-1]
+            try:
+                # Load the photo encodings and add to subject_encodings list
+                encodingsFile = open('./encodings/' + subjPhoto + '.encodings',\
+                'rb')
+                subject_encodings += pickle.load(encodingsFile)
+                encodingsFile.close()
+            except FileNotFoundError:
+                # When encode_all finds a photo with no faces, it does not save
+                # an encodings file. If we can't find an encoding file, that is
+                # probably why, so we can safely skip this photo.
+                continue
+    else:
+        # If the encodings haven't already been saved, find each photo's
+        # encodings and add to subject_encodings list
+        for subjPhoto in subjectPhotoList:
+            subjImg = face_recognition.load_image_file(subjPhoto)
+            subject_encodings += face_recognition.face_encodings(subjImg)
     if len(subject_encodings) == 0:
         print('No subject faces found.')
         return
     print("{} subject faces found.".format(len(subject_encodings)))
     for picture in tqdm(os.listdir(dirPath)):
+        # Set up a switchboard to track which subjects have appeared in the
+        # photo. If the switchboard is all True, then the photo includes all the
+        # subjects and should be included.
         switchboard = [False] * len(subject_encodings)
-        testPath = dirPath + picture
-        testImg = face_recognition.load_image_file(testPath)
-        testEncodings = face_recognition.face_encodings(testImg)
-        if len(testEncodings) == 0:
-            continue
+        if encoded:
+            try:
+                encodingsFile = open('./encodings/' + picture + '.encodings', \
+                'rb')
+                testEncodings = pickle.load(encodingsFile)
+                encodingsFile.close()
+            except FileNotFoundError:
+                continue
+        else:
+            testPath = dirPath + picture
+            testImg = face_recognition.load_image_file(testPath)
+            testEncodings = face_recognition.face_encodings(testImg)
+            if len(testEncodings) == 0:
+                continue
         for i in range(len(subject_encodings)):
+            # Get distances between test encodings and each subject encoding
             distances = face_recognition.face_distance(testEncodings, \
             subject_encodings[i])
             for d in distances:
                 if d <= 0.51:
+                    # If the subject encoding matches one of the test encodings,
+                    # flip the space on the switchboard to True
                     switchboard[i] = True
                     break
         if False not in switchboard:
+            testPath = dirPath + picture
             copy(testPath, './find_and/')
 
 # Find XOR (Lily)
 # Given a list of photos, finds photos that contain exactly one of the people in
 # the photos and copies them into a separate directory.
 # Parameters: List of paths to subject photos; path to the directory containing
-# a set of photos.
-def find_xor(subjectPhotoList, dirPath='./pictures/'):
+# a set of photos; boolean indicating whether photos in the directory have
+# already had their encodings saved using encode_all().
+def find_xor(subjectPhotoList, dirPath='./pictures/', encoded=False):
     if dirPath[-1] != '/':
         dirPath += '/'
     if not os.path.isdir('./find_xor/'):
         os.mkdir('./find_xor/')
     subject_encodings = []
-    for subjPhoto in subjectPhotoList:
-        subjImg = face_recognition.load_image_file(subjPhoto)
-        subject_encodings += face_recognition.face_encodings(subjImg)
+    if encoded:
+        for subjPhoto in subjectPhotoList:
+            # Get just the name of the photo, not the full path
+            subjPhoto = subjPhoto.split('/')[-1]
+            try:
+                # Load the photo encodings and add to subject_encodings list
+                encodingsFile = open('./encodings/' + subjPhoto + '.encodings',\
+                'rb')
+                subject_encodings += pickle.load(encodingsFile)
+                encodingsFile.close()
+            except FileNotFoundError:
+                # When encode_all finds a photo with no faces, it does not save
+                # an encodings file. If we can't find an encoding file, that is
+                # probably why, so we can safely skip this photo.
+                continue
+    else:
+        # If the encodings haven't already been saved, find each photo's
+        # encodings and add to subject_encodings list
+        for subjPhoto in subjectPhotoList:
+            subjImg = face_recognition.load_image_file(subjPhoto)
+            subject_encodings += face_recognition.face_encodings(subjImg)
     if len(subject_encodings) == 0:
         print('No subject faces found.')
         return
@@ -155,15 +210,24 @@ def find_xor(subjectPhotoList, dirPath='./pictures/'):
     for picture in tqdm(os.listdir(dirPath)):
         # Just keeps track of how many of the subjects are found in the photo.
         # The count has to be exactly one to be included.
-        foundCount = 0;
-        testPath = dirPath + picture
-        testImg = face_recognition.load_image_file(testPath)
-        testEncodings = face_recognition.face_encodings(testImg)
-        if len(testEncodings) == 0:
-            continue
+        foundCount = 0
+        if encoded:
+            try:
+                encodingsFile = open('./encodings/' + picture + '.encodings', \
+                'rb')
+                testEncodings = pickle.load(encodingsFile)
+                encodingsFile.close()
+            except FileNotFoundError:
+                continue
+        else:
+            testPath = dirPath + picture
+            testImg = face_recognition.load_image_file(testPath)
+            testEncodings = face_recognition.face_encodings(testImg)
+            if len(testEncodings) == 0:
+                continue
         for subj in subject_encodings:
-            distances = face_recognition.face_distance(testEncodings, \
-            subj)
+            # Get distances between test encodings and each subject encoding
+            distances = face_recognition.face_distance(testEncodings, subj)
             for d in distances:
                 if d <= 0.51:
                     foundCount += 1
@@ -171,4 +235,91 @@ def find_xor(subjectPhotoList, dirPath='./pictures/'):
             if foundCount > 1:
                 break
         if foundCount == 1:
+            testPath = dirPath + picture
             copy(testPath, './find_xor/')
+
+# Find and highlight in a group photo (Lily)
+# Parameters: Path to photo of just one person, path to the group photo
+def find_and_highlight(subjectPath, groupPath):
+    # Get the encoding of the subject
+    subject = face_recognition.load_image_file(subjectPath)
+    subjectEncoding = face_recognition.face_encodings(subject)[0]
+    # Get the list of encodings in the group picture
+    group = face_recognition.load_image_file(groupPath)
+    groupEncodings = face_recognition.face_encodings(group)
+    # Get the distances of each face from the subject and the locations of
+    # each face
+    distances = face_recognition.face_distance(groupEncodings, subjectEncoding)
+    locations = face_recognition.face_locations(group)
+    # Load the image with openCV so we can draw on it
+    cvimg = cv2.imread(groupPath, 1)
+    # Iterate through the distances until one is below the threshold
+    for i in range(len(distances)):
+        if distances[i] <= 0.51:
+            # Get the face location and draw a rectangle
+            top, right, bottom, left = locations[i]
+            cv2.rectangle(cvimg, (left, top), (right, bottom), (0,0,255), 5)
+            break
+    # Show the image
+    cv2.imshow('Image', cvimg)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+# 'Scrub out' the face of a person in a group of photos (Lily)
+# Given a photo of just one person (a scrub), blocks out that person's face in
+# every photo in a given directory and copies the resulting photos into a new
+# directory.
+# Parameters: path to scrub photo; path to the directory containing a set of
+# photos.
+def scrub(scrubPath, dirPath='./pictures/'):
+    if dirPath[-1] != '/':
+        dirPath += '/'
+    if not os.path.isdir('./no_scrubs/'):
+        os.mkdir('./no_scrubs/')
+    # Load the scrub photo and get scrub encoding
+    scrub = face_recognition.load_image_file(scrubPath)
+    scrubEncoding = face_recognition.face_encodings(scrub)[0]
+    # Iterate through each photo
+    for file in tqdm(os.listdir(dirPath)):
+        testPath = dirPath + file
+        test = face_recognition.load_image_file(testPath)
+        testEncodings = face_recognition.face_encodings(test)
+        # Get the distances and face locations of the test photo
+        distances = face_recognition.face_distance(testEncodings, scrubEncoding)
+        locations = face_recognition.face_locations(test)
+        found = False
+        for i in range(len(distances)):
+            if distances[i] <= 0.51:
+                # If the scrub is found, get that face location
+                top, right, bottom, left = locations[i]
+                # Load the image with openCV and draw a box on the face
+                cvimg = cv2.imread(testPath, 1)
+                cv2.rectangle(cvimg, (left, top), (right, bottom), (0,0,0), -1)
+                # Save the new image into the new directory
+                newPath = './no_scrubs/' + file
+                cv2.imwrite(newPath, cvimg)
+                found = True
+                break
+        # If the scrub is not in the photo, copy it to the new directory
+        # unchanged
+        if not found:
+            copy(testPath, './no_scrubs/')
+
+# Finds face encodings of all photos in a directory and saves the encodings
+# using pickle, so that later functions (find_and, find_xor) can load them later
+# rather than redoing the encodings every time.
+# Parameters: path to the directory containing a set of photos.
+def encode_all(dirPath='./pictures/'):
+    if dirPath[-1] != '/':
+        dirPath += '/'
+    if not os.path.isdir('./encodings/'):
+        os.mkdir('./encodings/')
+    for file in tqdm(os.listdir(dirPath)):
+        imagePath = dirPath + file
+        image = face_recognition.load_image_file(imagePath)
+        imageEncodings = face_recognition.face_encodings(image)
+        # Only save an encodings file if there are faces in the photo
+        if len(imageEncodings) > 0:
+            encodingsFile = open('./encodings/' + file + '.encodings', 'wb')
+            pickle.dump(imageEncodings, encodingsFile)
+            encodingsFile.close()
