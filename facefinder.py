@@ -5,7 +5,7 @@ Summer 2018
 3) Maintain similarity in variable naming with prior posted code, unless you see some egregious errors.
 """
 
-import face_recognition, cv2, os, pickle
+import face_recognition, cv2, os, pickle, colorsys
 from tqdm import tqdm
 from shutil import move, copy, rmtree
 
@@ -21,9 +21,15 @@ def highlight_faces(imgPath):
     face_locations = face_recognition.face_locations(img)
     # Each item in face_locations is the dimensions of a box around a face
     # We can pass these dimensions into the cv2 rectangle function to highlight
-    for face in face_locations:
-        top, right, bottom, left = face
-        cv2.rectangle(cvimg, (left, top), (right, bottom), (0,0,255), 5)
+    # for face in face_locations:
+    #     top, right, bottom, left = face
+    #     cv2.rectangle(cvimg, (left, top), (right, bottom), (0,0,255), 5)
+    for i in range(len(face_locations)):
+        top, right, bottom, left = face_locations[i]
+        hue = (float(i) / len(face_locations))
+        (r, g, b) = colorsys.hsv_to_rgb(hue, 0.6, 0.6)
+        cv2.rectangle(cvimg, (left, top), (right, bottom), (b*255, g*255, \
+        r*255), 5)
 
     # Display image
     cv2.imshow("highlighted faces", cvimg)
