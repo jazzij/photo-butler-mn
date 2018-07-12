@@ -143,6 +143,7 @@ def find_and(subjectPhotoList, dirPath='./pictures/', encoded=False):
         print('No subject faces found.')
         return
     print("{} subject faces found.".format(len(subject_encodings)))
+    receipt = []
     for picture in tqdm(os.listdir(dirPath)):
         # Set up a switchboard to track which subjects have appeared in the
         # photo. If the switchboard is all True, then the photo includes all the
@@ -175,6 +176,10 @@ def find_and(subjectPhotoList, dirPath='./pictures/', encoded=False):
         if False not in switchboard:
             testPath = dirPath + picture
             copy(testPath, './find_and/')
+            receipt.append(picture)
+    print("Matching photos:")
+    for p in receipt:
+        print(p)
 
 # Find XOR (Lily)
 # Given a list of photos, finds photos that contain exactly one of the people in
@@ -213,6 +218,7 @@ def find_xor(subjectPhotoList, dirPath='./pictures/', encoded=False):
         print('No subject faces found.')
         return
     print("{} subject faces found.".format(len(subject_encodings)))
+    receipt = []
     for picture in tqdm(os.listdir(dirPath)):
         # Just keeps track of how many of the subjects are found in the photo.
         # The count has to be exactly one to be included.
@@ -243,6 +249,10 @@ def find_xor(subjectPhotoList, dirPath='./pictures/', encoded=False):
         if foundCount == 1:
             testPath = dirPath + picture
             copy(testPath, './find_xor/')
+            receipt.append(picture)
+    print("Matching photos:")
+    for p in receipt:
+        print(p)
 
 # Find and highlight in a group photo (Lily)
 # Parameters: Path to photo of just one person, path to the group photo
