@@ -39,7 +39,7 @@ def nested_operator(path,picture,operations):
     result_list = []
     for i in os.listdir(path):
         if i != "project2.py":
-            image = face_recognition.load_image_file(i)
+            image = face_recognition.load_image_file(path+i)
             image_encoding = face_recognition.face_encodings(image)
             boolean_list = []
             final_boolean = True
@@ -51,7 +51,7 @@ def nested_operator(path,picture,operations):
                     boolean_list.append(False)
             for k in range(len(boolean_list)-1):
                 final_boolean = boolean_list[0]
-                if k == len(operations):
+                if k >= len(operations):
                     operator = operations[-1]
                 else:
                     operator = operations[k]
@@ -71,5 +71,10 @@ def nested_operator(path,picture,operations):
                         final_boolean = True
             if final_boolean == True:
                 result_list.append(i)
-                copy(path+i,path+"/nested_operations/"+i)
+                if os.path.exists(path+"nested_operations"):
+                    copy(path+i,path+"nested_operations\\"+i)
+                else:
+                    os.mkdir(path+"nested_operations")
+                    copy(path+i,path+"nested_operations\\"+i)
     return result_list
+
