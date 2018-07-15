@@ -69,7 +69,7 @@ def nested_operator(path,picture,operations):
                         final_boolean = False
                     else:
                         final_boolean = True
-            if final_boolean = True:
+            if final_boolean == True:
                 result_list.append(i)
                 copy(path+i,path+"/nested_operations/"+i)
     return result_list
