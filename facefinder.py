@@ -305,3 +305,5 @@ def scrub(scrubPath, dirPath='./pictures/', encoded=True):
         # unchanged
         if not found:
             copy(testPath, './no_scrubs/')
+
+#### ADD BINHS CODE HERE ###
