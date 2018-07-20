@@ -9,14 +9,23 @@ import face_recognition, cv2, os, pickle
 from tqdm import tqdm
 from shutil import move, copy, rmtree
 
-# Highlight faces in a photo (Lily)
-# Draws red rectangles around each identified face
-# Parameters: path to photo (e.g. './pictures/my_photo.jpg')
+def resizeImg( img, newSize ):
+	r = newSize / img.shape[1]
+	dim = (newSize, int(img.shape[0] * r))
+	resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+	return resized
+
+"""
+Highlight faces in a photo (Lily)
+Draws red rectangles around each identified face
+Parameters: path to photo (e.g. './pictures/my_photo.jpg')
+"""
 def highlight_faces(imgPath):
     # Loads the image first into face_recognition to find the faces, then to cv2
     # to draw rectangles
     img = face_recognition.load_image_file(imgPath)
     cvimg = cv2.imread(imgPath, 1)
+	
 
     face_locations = face_recognition.face_locations(img)
     # Each item in face_locations is the dimensions of a box around a face
@@ -26,14 +35,17 @@ def highlight_faces(imgPath):
         cv2.rectangle(cvimg, (left, top), (right, bottom), (0,0,255), 5)
 
     # Display image
+    cvimg = resizeImg(cvimg, 700)
     cv2.imshow("highlighted faces", cvimg)
-    cv2.waitKey(0)
+    cv2.waitKey(5000)
     cv2.destroyAllWindows()
 
+"""
 # Sort out photos without faces (Lily)
 # Moves faces without faces into a directory named "sorted_out"
 # Parameters: path of directory containing a set of photos (defaults to
 # './pictures/'
+"""
 def sort_out(dirPath='./pictures/'):
     # Make sure the directory path ends in a slash
     if dirPath[-1] != '/':
@@ -48,11 +60,13 @@ def sort_out(dirPath='./pictures/'):
         if len(face_locations) == 0:
             move(imgPath, './sorted_out/')
 
+"""
 # Find photos of a person (Lily)
 # Given a photo of just one person, copies all photos containing that person
 # into a directory 'found_person'
 # Parameters: path of subject's photo; path of directory containing a set of
 # photos
+"""
 def find_person(subjectPath, dirPath='./pictures/'):
     # Make sure the directory path ends in a slash
     if dirPath[-1] != '/':
@@ -76,10 +90,12 @@ def find_person(subjectPath, dirPath='./pictures/'):
                 copy(testPath, './found_person/')
                 break
 
+"""
 # Make clean (Lily)
 # Undo any changes made by other functions, to easily reset for testing - feel
 # free to change this as more functions are added!
 # Parameters: Path to the directory containing a set of photos
+"""
 def make_clean(dirPath='./pictures/'):
     if dirPath[-1] != '/':
         dirPath += '/'
@@ -99,6 +115,7 @@ def make_clean(dirPath='./pictures/'):
     if os.path.isdir('./encodings/'):
         rmtree('./encodings/')
 
+"""
 # Find set AND (Lily)
 # Given a list of photos, finds all photos that contain every person in those
 # photos and copies them into a separate directory.
@@ -106,6 +123,7 @@ def make_clean(dirPath='./pictures/'):
 # Parameters: List of paths to subject photos; path to the directory containing
 # a set of photos; boolean indicating whether photos in the directory have
 # already had their encodings saved using encode_all().
+"""
 def find_and(subjectPhotoList, dirPath='./pictures/', encoded=False):
     if dirPath[-1] != '/':
         dirPath += '/'
@@ -170,12 +188,14 @@ def find_and(subjectPhotoList, dirPath='./pictures/', encoded=False):
             testPath = dirPath + picture
             copy(testPath, './find_and/')
 
+"""
 # Find XOR (Lily)
 # Given a list of photos, finds photos that contain exactly one of the people in
 # the photos and copies them into a separate directory.
 # Parameters: List of paths to subject photos; path to the directory containing
 # a set of photos; boolean indicating whether photos in the directory have
 # already had their encodings saved using encode_all().
+"""
 def find_xor(subjectPhotoList, dirPath='./pictures/', encoded=False):
     if dirPath[-1] != '/':
         dirPath += '/'
@@ -238,8 +258,10 @@ def find_xor(subjectPhotoList, dirPath='./pictures/', encoded=False):
             testPath = dirPath + picture
             copy(testPath, './find_xor/')
 
+"""
 # Find and highlight in a group photo (Lily)
 # Parameters: Path to photo of just one person, path to the group photo
+"""
 def find_and_highlight(subjectPath, groupPath):
     # Get the encoding of the subject
     subject = face_recognition.load_image_file(subjectPath)
@@ -265,12 +287,14 @@ def find_and_highlight(subjectPath, groupPath):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
+"""
 # 'Scrub out' the face of a person in a group of photos (Lily)
 # Given a photo of just one person (a scrub), blocks out that person's face in
 # every photo in a given directory and copies the resulting photos into a new
 # directory.
 # Parameters: path to scrub photo; path to the directory containing a set of
 # photos.
+"""
 def scrub(scrubPath, dirPath='./pictures/'):
     if dirPath[-1] != '/':
         dirPath += '/'
@@ -305,10 +329,12 @@ def scrub(scrubPath, dirPath='./pictures/'):
         if not found:
             copy(testPath, './no_scrubs/')
 
+"""
 # Finds face encodings of all photos in a directory and saves the encodings
 # using pickle, so that later functions (find_and, find_xor) can load them later
 # rather than redoing the encodings every time.
 # Parameters: path to the directory containing a set of photos.
+"""
 def encode_all(dirPath='./pictures/'):
     if dirPath[-1] != '/':
         dirPath += '/'
