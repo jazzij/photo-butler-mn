@@ -4,8 +4,13 @@
 
 {% block body %}
 <h1>Upload new File</h1>
-    <form id="form-upload" method="POST" enctype="multipart/form-data">
-      <input type="file" name="photo" accept="image/*">
-      <input type="submit" value="Upload">
+<div>
+    <form id="form-upload" method="POST" enctype="multipart/form-data" >
+      <input type="file" name="photo" multiple>
+      <!-- <input type="submit" value="Upload"> -->
+      <button type="submit"> Submit </button>
     </form>
+</div>
+<div>
+</div>
 {% endblock %}  

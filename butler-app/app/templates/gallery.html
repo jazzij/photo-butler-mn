@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{%block title %} Gallery {% endblock %}
+
+{% block body %}
+
+<div>
+	{{image_names}}
+	{% for image_name in images_names %}
+		<img src="{{ url_for('send_image', filename= image_name) }}">
+	{% endfor %}
+</div>
+
+{% endblock %}
