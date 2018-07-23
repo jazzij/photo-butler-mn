@@ -307,25 +307,6 @@ def scrub(scrubPath, dirPath='./pictures/', encoded=True):
             copy(testPath, './no_scrubs/')
 
 
-"""
-# Finds face encodings of all photos in a directory and saves the encodings
-# using pickle, so that later functions (find_and, find_xor) can load them later
-# rather than redoing the encodings every time.
-# Parameters: path to the directory containing a set of photos.
-"""
-def encode_all(dirPath='./pictures/'):
-    if dirPath[-1] != '/':
-        dirPath += '/'
-    if not os.path.isdir('./encodings/'):
-        os.mkdir('./encodings/')
-    for file in tqdm(os.listdir(dirPath)):
-        imagePath = dirPath + file
-        image = face_recognition.load_image_file(imagePath)
-        imageEncodings = face_recognition.face_encodings(image)
-        # Only save an encodings file if there are faces in the photo
-        if len(imageEncodings) > 0:
-            encodingsFile = open('./encodings/' + file + '.encodings', 'wb')
-            pickle.dump(imageEncodings, encodingsFile)
-            encodingsFile.close()
+
 
 
