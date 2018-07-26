@@ -1,0 +1,20 @@
+<!DOCTYPE>
+<html lang ="en">
+  <head>
+    <script = "script.js"></script>
+  </head>
+  <body>
+    <h1>All the faces shown</h1>
+    <div id ="face_locations">
+      {% if img}
+        {% for i in face_locations %}
+          <button type = "button" onclick = "addImages()"><img src = {{ img }}, style = "position: absolute, clip:rect({{face_locations[i]}})">
+          </button>
+        {% endfor %}
+      {% endif %}
+      <button type = "button">Boolean</button>
+      {% block body%}
+      {% endblock %}
+    </div>
+  </body>
+</html>
