@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{%block title %} Clickable Gallery {% endblock %}
+
+{% block body %}
+<h2>{{route}}</h2>
+<div>Buttons here: {% block buttons %} {% endblock %}</div>
+<div>
+	<div id="img_names"> <h2>Operations:<h2>	
+	 	<ul id="operations">
+            <li>TEST</li>
+    	</ul>
+	
+	</div>
+	{{image_names}}
+	{% for image_name in image_names %}
+		<a href="{{route}}/{{image_name}}" ><img src="{{ url_for('send_image', filename= image_name) }}"></a>
+	{% endfor %}
+</div>
+
+{% endblock %}
+
+
+
+
+
+
+{{url_for('highlight_faces', filename= filename) }}
