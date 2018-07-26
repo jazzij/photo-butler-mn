@@ -3,7 +3,7 @@
 {%block title %} Upload {% endblock %}
 
 {% block body %}
-<h1>Upload new File</h1>
+<h1>Upload Images:</h1>
 <div>
     <form id="form-upload" method="POST" enctype="multipart/form-data" >
       <input type="file" name="photo" multiple>
@@ -11,6 +11,15 @@
       <button type="submit"> Submit </button>
     </form>
 </div>
+<h1>Upload Folder:</h1>
 <div>
+  <form id="form-upload" method="POST" enctype="multipart/form-data" >
+    <input type="file" name="photo" webkitdirectory mozdirectory>
+    <!-- <input type="submit" value="Upload"> -->
+    <button type="submit"> Submit </button>
+  </form>
 </div>
-{% endblock %}  
+<div>
+<a href="uploadconfirmation">Confirm</a>
+</div>
+{% endblock %}
