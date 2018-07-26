@@ -4,8 +4,25 @@
 {%block title %} Home {% endblock %}
 
 {% block body %}
+
+<style>
+
+a.menu:link {
+	font-size: x-large;
+}
+
+a.menu:visited {
+	color: blue;
+}
+
+</style>
+
 <div>
-	<img id="photo" src="static/images/butler.jpg">{{ filename }}</img>
+	<h1>Welcome to Photo Butler!</h1>
+	<p><a href="gallery" class="menu">View Uploaded Images</a>
+	<p><a href="booleanfaces" class="menu">Search for Faces</a>
+	<p><a href="upload" class="menu">Upload an Image or Folder</a>
+	<!-- <img id="photo" src="static/images/butler.jpg">{{ filename }}</img> -->
 	<!-- <img id="photoTest" src={{ filepath }}>{{ filename }}</img> -->
 </div>
 
