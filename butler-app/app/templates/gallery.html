@@ -4,11 +4,50 @@
 
 {% block body %}
 
+<style>
+
+img {
+	float: left;
+	width: 33.33%;
+	padding: 5px;
+}
+
+.row::after {
+	content: "";
+	clear: both;
+	display: table;
+}
+
+img:hover {
+	opacity: 0.4;
+}
+
+</style>
+
 <div>
-	{{image_names}}
+
+	<!-- {{image_names}}
 	{% for image_name in images_names %}
 		<img src="{{ url_for('send_image', filename= image_name) }}">
-	{% endfor %}
+	{% endfor %} -->
+
+	<h1>Uploads:</h1>
+
+	<div class="row">
+		<img src="../static/images/butler.jpg" alt="Image">
+		<img src="../static/images/butler.jpg" alt="Image">
+		<img src="../static/images/butler.jpg" alt="Image">
+	</div>
+	<div class="row">
+		<img src="../static/images/butler.jpg" alt="Image">
+		<img src="../static/images/butler.jpg" alt="Image">
+		<img src="../static/images/butler.jpg" alt="Image">
+	</div>
+	<div class="row">
+		<img src="../static/images/butler.jpg" alt="Image">
+		<img src="../static/images/butler.jpg" alt="Image">
+	</div>
+
 </div>
 
 {% endblock %}
