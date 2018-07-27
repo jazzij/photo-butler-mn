@@ -3,7 +3,7 @@
 {%block title %} Gallery {% endblock %}
 
 {% block body %}
-<div>Buttons here: {% block buttons %} {% endblock %}</div>
+<div>{% block buttons %} {% endblock %}</div>
 
 <style>
 
@@ -12,6 +12,7 @@ img {
 	float: left;
 	width: 33.33%;
 	padding: 5px;
+	opacity: 0.4
 }
 
 /* Clear for the next row */
@@ -23,41 +24,27 @@ img {
 
 /* Grayout on hover */
 img:hover {
-	opacity: 0.4;
+	opacity: 1;
 }
 
 </style>
 
 <div>
 
-	
-
 	<h1>Uploads:</h1>
-
+	{% for r in range(0, rows) %}
 	<div class="row">
-		<img src="../static/images/butler.jpg" alt="Image">
-		<img src="../static/images/butler.jpg" alt="Image">
-		<img src="../static/images/butler.jpg" alt="Image">
+	{% for col in image_names[(r*3):((r*3)+3)] %}
+		<img src="{{ url_for('send_image', filename= col) }}" alt="Image">
+		<!--<img src="{{ url_for('send_image', filename= col1) }}" alt="Image">
+		<img src="{{ url_for('send_image', filename= col1) }}" alt="Image">-->
+	
+	{% endfor %}
 	</div>
-	<div class="row">
-		<img src="../static/images/butler.jpg" alt="Image">
-		<img src="../static/images/butler.jpg" alt="Image">
-		<img src="../static/images/butler.jpg" alt="Image">
-	</div>
-	<div class="row">
-		<img src="../static/images/butler.jpg" alt="Image">
-		<img src="../static/images/butler.jpg" alt="Image">
-	</div>
+	{% endfor %}
+	
+	
 
 </div>
 
 {% endblock %}
-
-<!-- {{image_names}}
-	{% for image_name in images_names %}
-
-	{{image_names}}
-	{% for image_name in image_names %}
-
-		<img src="{{ url_for('send_image', filename= image_name) }}">
-	{% endfor %} -->

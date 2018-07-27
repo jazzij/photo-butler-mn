@@ -26,13 +26,16 @@ img {
 <h1>Upload Successful!</h1>
 
 <!-- Display uploaded images -->
-<img src="../static/images/butler.jpg">
+{{upload}}
+<img src="{{ url_for("send_image", filename=upload) }}">
 
 <h1>Options:</h1>
 
 <!-- These will eventually link to pages -->
-<p><a href="" class="options">Highlight a Face</a>
-<p><a href="" class="options">Scrub Out a Face</a>
-<p><a href="" class="options">Show Faces in Photo</a>
+<p><a href="{{url_for('highlight_faces')}}" class="options">Highlight Faces</a>
+<p><a href="{{url_for('scrub_person')}}" class="options">Scrub Out a Face</a>
+<p><a href="{{url_for('find_person')}}" class="options">Show Faces in Photo</a>
 
 {% endblock %}
+
+"{{ url_for('send_image', filename= col) }}"

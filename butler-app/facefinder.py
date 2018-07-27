@@ -283,8 +283,8 @@ def find_and_highlight(subjectPath, groupPath, encoded=False):
 # Parameters: path to scrub photo; path to the directory containing a set of
 # photos.
 '''
-def scrub(scrubPath, dirPath='./pictures/', encoded=True):
-    dirPath = init_function(dirPath, './no_scrubs/')
+def scrub(scrubPath, dirPath='./pictures/', destPath = './no_scrubs/',  encoded=True):
+    dirPath = init_function(dirPath, destPath)
     if not encoded:
         encode_all(dirPath)
     scrubEncoding = get_subject_encodings(scrubPath)[0]
@@ -304,14 +304,14 @@ def scrub(scrubPath, dirPath='./pictures/', encoded=True):
                 cvimg = cv2.imread(testPath, 1)
                 cv2.rectangle(cvimg, (left, top), (right, bottom), (0,0,0), -1)
                 # Save the new image into the new directory
-                newPath = './no_scrubs/' + fileName
+                newPath = destPath + fileName
                 cv2.imwrite(newPath, cvimg)
                 found = True
                 break
         # If the scrub is not in the photo, copy it to the new directory
         # unchanged
         if not found:
-            copy(testPath, './no_scrubs/')
+            copy(testPath, destPath)
 
 '''
 #Applying "or" operation to all the faces in a given picture (Binh)
@@ -436,4 +436,3 @@ def timeline(path):
         print(str(j[-2])+" "+str(j[-1]))
 
 
-highlight_faces("./app/uploads/IMG_9440.JPG")

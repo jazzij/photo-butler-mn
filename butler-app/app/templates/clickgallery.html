@@ -3,13 +3,43 @@
 {%block title %} Clickable Gallery {% endblock %}
 
 {% block body %}
-<h2>{{route}}</h2>
-<div>Buttons here: {% block buttons %} {% endblock %}</div>
+<h1>{{route}}</h1>
+<div>{% block buttons %} {% endblock %}</div>
+
+<style>
+
+/* Set up columns to be next to each other */
+img {
+	float: left;
+	width: 33.33%;
+	padding: 5px;
+	opacity: 0.4
+}
+
+/* Clear for the next row */
+.row::after {
+	content: "";
+	clear: both;
+	display: table;
+}
+
+/* Grayout on hover */
+img:hover {
+	opacity: 1;
+}
+
+</style>
 <div>
-	{{image_names}}
-	{% for image_name in image_names %}
-		<a href="{{route}}/{{image_name}}" ><img src="{{ url_for('send_image', filename= image_name) }}"></a>
+	{% for r in range(0, rows) %}
+	<div class="row">
+	{% for col in image_names[(r*rows):((r*rows)+rows)] %}
+
+		<a href="{{route}}/{{col}}" ><img src="{{ url_for('send_image', filename= col) }}"></a>
+
 	{% endfor %}
+	</div>
+	{% endfor %}
+
 </div>
 
 {% endblock %}
