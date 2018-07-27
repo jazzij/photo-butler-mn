@@ -3,6 +3,7 @@
 {%block title %} Gallery {% endblock %}
 
 {% block body %}
+<div>Buttons here: {% block buttons %} {% endblock %}</div>
 
 <style>
 
@@ -29,10 +30,7 @@ img:hover {
 
 <div>
 
-	<!-- {{image_names}}
-	{% for image_name in images_names %}
-		<img src="{{ url_for('send_image', filename= image_name) }}">
-	{% endfor %} -->
+	
 
 	<h1>Uploads:</h1>
 
@@ -54,3 +52,12 @@ img:hover {
 </div>
 
 {% endblock %}
+
+<!-- {{image_names}}
+	{% for image_name in images_names %}
+
+	{{image_names}}
+	{% for image_name in image_names %}
+
+		<img src="{{ url_for('send_image', filename= image_name) }}">
+	{% endfor %} -->

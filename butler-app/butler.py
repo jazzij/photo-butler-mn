@@ -4,11 +4,12 @@ https://coderwall.com/p/pstm1w/deploying-a-flask-app-at-heroku
 
 
 '''
-import os
+import os, time
 from flask import  Flask, request, render_template, flash, url_for, send_from_directory
 from werkzeug.utils import secure_filename 
 import facefinder  
 from app import app
+
 
 
 UPLOAD_FOLDER = './app/uploads/'
@@ -87,7 +88,61 @@ def upload():
 def watch_folder():
 	return "watching"
 	
-''' DISPLAY UPLOADED PHOTO(S) '''
+'''  DISPLAY UPLOADED PHOTO(S) '''
+
+''' EXECUTE PHoto options'''
+
+# HIGHLIGHT FACES. Goto /highlight_faces to load the page. Click on any image. 
+# The image will redirect here
+@app.route("/highlight_faces/<filename>")
+@app.route("/highlight_faces")
+def highlight_faces(filename=None):
+	if filename is None:
+		photos = getUploadedPhotos()
+		return render_template("clickgallery.html", image_names=photos, route="highlight_faces")
+		
+	else:
+		#return send_from_directory("uploads", filename)
+		facefinder.highlight_faces(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+		while filename not in os.listdir("./results/"):
+			pass
+			
+		return send_from_directory("results", filename)
+
+
+#FIND A PERSON = input file, output = gallery
+@app.route("/find_person/<filename>")
+@app.route("/find_person")
+def find_person(filename=None):
+	if filename is None:
+		photos = getUploadedPhotos()
+		return render_template("clickgallery.html", image_names=photos, route="find_person")	
+	else:
+		#return send_from_directory("uploads", filename)
+		subjectPath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+		searchPath = "/Users/gingerbread/Box Sync/Projects/PhotoCV/2014_05_11_Ogrod Botaniczny" #hardcoded, but can select
+		destPath = "./app/found_person/"
+		facefinder.find_person(subjectPath, searchPath, destPath)
+		return render_template("gallery.html", image_names=destPath)
+		
+
+#SCRUB A PERSON = input file, output = gallery 	
+@app.route("/scrub_person/<filename>")
+@app.route("/scrub_person")
+def scrub_person(filename=None):
+	if filename is None:
+		photos = getUploadedPhotos()
+		return render_template("clickgallery.html", image_names=photos, route="scrub_person")
+	else:
+		#return send_from_directory("uploads", filename)
+		subjectPath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+		searchPath = "/Users/gingerbread/Box Sync/Projects/PhotoCV/2014_05_11_Ogrod Botaniczny" #hardcoded, but can select
+		destPath = "./app/scrub_person/"
+		facefinder.scrub_person(subjectPath, searchPath, destPath)
+		return render_template("gallery.html", image_names=destPath)
+	
+
+''' THESE ARE HELPER FUNCTIONS FOR THE ABOVE MAIN ROUTES'''
 @app.route("/file/<filename>", methods=['GET'])
 def send_image(filename):
 	'''target = os.path.join(os.getcwd(), "uploads/")
@@ -102,34 +157,34 @@ def send_image(filename):
 	return send_from_directory("uploads", filename)
 
 
+''' this is a test function. Displays an unformatted list of photos'''
 @app.route("/gallery")
 def gallery():
+	photos = getUploadedPhotos()
+	return render_template("gallery.html", image_names=photos)
+
+def getUploadedPhotos():
 	photos = []
 	for f in os.listdir(app.config['UPLOAD_FOLDER']):
 		if allowed_file(f):
 			photos.append(f)
-	
-	return render_template("gallery.html", image_names=photos)
-	
+	return photos
 
 @app.route("/facefun", methods=['GET', 'POST'])
-def face_fun():	
+def boolean_faces():	
 	if request.method == 'GET':
-		return render_template("gallery.html")
+		return render_template("booleanfaces.html")
 		
 	if request.method == 'POST':
 		return "sent info to /face_fun"
 		#1. What operation is being requested (from button press)
+		ops = ["AND", "OR", "NOT", "XOR"]
+		for op in ops:
+			if request.args.getlist(op) is not None: #request.args.getlist(op): this should return a list of filenames
+				names = request.args.getlist(op)
+				fullpath = NONE #convert names to full paths
+				facefinder.find_and(names, dirPath = "results/")
+				#save to results folder
 		#2. What image will the operation be done on?	
 
-@app.route("/highlight_faces/<filename>")
-def highlight_faces(filename=None):
-	if filename is None:
-		return "highlight faces"
-	else:
-		return send_from_directory("uploads", filename)
-
-
-@app.route("/custom_gallery")
-def custom_gallery():
-	return "custom gallery."	
+	
