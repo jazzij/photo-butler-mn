@@ -4,9 +4,8 @@
 
 {% block body %}
 <div>Buttons here: {% block buttons %} {% endblock %}</div>
-<div>
-	{{image_names}}	
 
+	{{image_names}}
 	{% for image_name in image_names %}
 		<img src="{{ url_for('send_image', filename= image_name) }}">
 	{% endfor %}

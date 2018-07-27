@@ -90,6 +90,8 @@ def watch_folder():
 	
 '''  DISPLAY UPLOADED PHOTO(S) '''
 
+''' EXECUTE PHoto options'''
+
 # HIGHLIGHT FACES. Goto /highlight_faces to load the page. Click on any image. 
 # The image will redirect here
 @app.route("/highlight_faces/<filename>")
@@ -107,6 +109,38 @@ def highlight_faces(filename=None):
 			
 		return send_from_directory("results", filename)
 
+
+#FIND A PERSON = input file, output = gallery
+@app.route("/find_person/<filename>")
+@app.route("/find_person")
+def find_person(filename=None):
+	if filename is None:
+		photos = getUploadedPhotos()
+		return render_template("clickgallery.html", image_names=photos, route="find_person")	
+	else:
+		#return send_from_directory("uploads", filename)
+		subjectPath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+		searchPath = "/Users/gingerbread/Box Sync/Projects/PhotoCV/2014_05_11_Ogrod Botaniczny" #hardcoded, but can select
+		destPath = "./app/found_person/"
+		facefinder.find_person(subjectPath, searchPath, destPath)
+		return render_template("gallery.html", image_names=destPath)
+		
+
+#SCRUB A PERSON = input file, output = gallery 	
+@app.route("/scrub_person/<filename>")
+@app.route("/scrub_person")
+def scrub_person(filename=None):
+	if filename is None:
+		photos = getUploadedPhotos()
+		return render_template("clickgallery.html", image_names=photos, route="scrub_person")
+	else:
+		#return send_from_directory("uploads", filename)
+		subjectPath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+		searchPath = "/Users/gingerbread/Box Sync/Projects/PhotoCV/2014_05_11_Ogrod Botaniczny" #hardcoded, but can select
+		destPath = "./app/scrub_person/"
+		facefinder.scrub_person(subjectPath, searchPath, destPath)
+		return render_template("gallery.html", image_names=destPath)
+	
 
 ''' THESE ARE HELPER FUNCTIONS FOR THE ABOVE MAIN ROUTES'''
 @app.route("/file/<filename>", methods=['GET'])
