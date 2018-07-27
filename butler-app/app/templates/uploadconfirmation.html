@@ -6,12 +6,18 @@
 
 <style>
 
+/* Make menu links bigger without affecting the links in the header */
 a.options:link {
 	font-size: x-large;
 }
 
+/* Links should stay the same color even once visited */
 a.options:visited {
 	color: blue;
+}
+
+img {
+	max-width: 50%;
 }
 
 </style>
@@ -19,10 +25,12 @@ a.options:visited {
 
 <h1>Upload Successful!</h1>
 
+<!-- Display uploaded images -->
 <img src="../static/images/butler.jpg">
 
 <h1>Options:</h1>
 
+<!-- These will eventually link to pages -->
 <p><a href="" class="options">Highlight a Face</a>
 <p><a href="" class="options">Scrub Out a Face</a>
 <p><a href="" class="options">Show Faces in Photo</a>

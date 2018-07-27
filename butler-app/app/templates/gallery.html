@@ -6,18 +6,21 @@
 
 <style>
 
+/* Set up columns to be next to each other */
 img {
 	float: left;
 	width: 33.33%;
 	padding: 5px;
 }
 
+/* Clear for the next row */
 .row::after {
 	content: "";
 	clear: both;
 	display: table;
 }
 
+/* Grayout on hover */
 img:hover {
 	opacity: 0.4;
 }
