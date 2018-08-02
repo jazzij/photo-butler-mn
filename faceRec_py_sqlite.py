@@ -1,6 +1,8 @@
 import sqlite3
 from sqlite3 import Error
 
+
+    
 #Create a Connection object to represent the database (DB)
 def create_connection(db_file):
     """ create a database connection to the SQLite database
@@ -10,6 +12,7 @@ def create_connection(db_file):
     """
     try:
         conn = sqlite3.connect(db_file)
+        conn.execute('pragma foreign_keys=ON')
         return conn
     except Error as e:
         print(e)
@@ -25,6 +28,7 @@ def create_table(conn, sql_create_table):
     try:
         #represent a database cursor to iterate/manipulate DB 
         db_cursor = conn.cursor()
+        
         db_cursor.execute(sql_create_table) 
     except Error as e:
         print(e)
@@ -60,7 +64,8 @@ def sql_create_photos_table ():
                     color_format text,
                     has_a_face text,
                     RASTER_format text,
-                    face_detection_model text
+                    face_detection_model text,
+                    UNIQUE (file_ref_encoding)
                  ); """
 
         
@@ -88,7 +93,7 @@ def sql_create_faces_table():
                   FOREIGN KEY (file_ref_of_facial_encodings) 
                       REFERENCES photos(file_ref_encoding)
                       ON UPDATE CASCADE                  
-                      ON DELETE NO ACTION
+                      ON DELETE CASCADE
               ); """ 
  
 ###########################################
@@ -128,9 +133,59 @@ def create_face(conn, face_entry):
     cur.execute(sql, face_entry)
     return cur.lastrowid 
 
-#####################
+##############################################
+# row deletion for the tables photos and faces
+#############################################
+
+def delete_photo_entry(conn, file_ref_of_numpy_array):
+    """
+    Delete a photo by primary key value
+    :param conn:  Connection to the SQLite database
+    :param id: primary key of the photo
+    :return:
+    """
+    sql = 'DELETE FROM photos WHERE file_ref_of_numpy_array =? '
+    cur = conn.cursor()
+    cur.execute(sql, (file_ref_of_numpy_array,))
+
+def delete_face_entry(conn, file_ref_of_facial_encodings, position_of_face_in_image):
+    """
+    Delete a face by primary key value
+    :param conn:  Connection to the SQLite database
+    :param file_ref_of_faceial_encodings: the file where the array of encodings for all faces 
+        in the image is stored
+    :param position_of_face_in_image: the index of that array for this face 
+    :return:
+    """
+    sql = 'DELETE FROM faces WHERE file_ref_of_facial_encodings =? AND position_of_face_in_image=?'
+    cur = conn.cursor()
+    cur.execute(sql, (file_ref_of_facial_encodings, position_of_face_in_image))
+
+def drop_table(conn, table):
+    """
+    Delete a table from the database
+    :param conn:  Connection to the SQLite database
+    :param table: the name of the table to delete. 
+    :return:
+    """
+    sql = 'DROP TABLE ' + table
+    curr = conn.cursor()
+    curr.execute(sql)
+
+
+#####################################################################################
+# sql generating code.
+# This works, but it isn't very well designed. The intent was to create something
+# for the user who doesn't know SQL. I.e., an interface where the user can plug
+# in search terms and the code will write the SQL required to perform the search.
+# Not completely unlike searching through a library catalog where you can search by
+# keyword, author, print format etc. It's an entirely separate project to create this
+# interface, definitely a manageble one if you already know SQL.
+####################################################################################
+
+######################
 # update table values
-####################
+#####################
 
 def update_table(conn, table, update_keys, values, location):
     """
@@ -141,7 +196,9 @@ def update_table(conn, table, update_keys, values, location):
     :param values: replacement data in order corresponding to order of update_keys
         >=0 additional values correspond to values used as entry identifiers  
     :param location: None results in all values of a column replaced, currently takes
-        a single value primary key to update a single row   
+        a single value primary key to update a single row. In reality, you can input
+        whatever sql language makes sense to conduct the query you want by appropriately
+        splitting your query into location and value. 
     :return: 
     """
     sql = "UPDATE " + table + " SET " + update_keys[0] + " = ? "
@@ -153,6 +210,7 @@ def update_table(conn, table, update_keys, values, location):
         sql += "WHERE " + location + " = ?\n"
     cur = conn.cursor()
     cur.execute(sql, values)
+
 
 def main():
     database = "./encodings.db"
@@ -167,9 +225,21 @@ def main():
                        'bubble_creator', 'bubble_creation_date', 'bubble_color_format',
                        'bubble_has_a_face', 'bubble_RASTER_format', 'bubble_face_detection')
         create_photo(conn, photo_entry)
+        create_face(conn, ('bubble_en',2,'face', 'face', 'face')) 
         update_table(conn, 'photos', ['file_ref_of_numpy_array', 'file_ref_encoding', 
                                       'file_permissions'], ('bubble1', 'bubble1_en', 'bubble1_perm'), None)
-    
+        delete_photo_entry(conn, ('bubble1'))
+
+        photo_entry1 = ('bubble3', 'bubble3_en', 'bubble_perm', 'bubble_mod', 'bubble_owner',
+                       'bubble_creator', 'bubble4_creation_date', 'bubble4_color_format',
+                       'bubble_has_a_face', 'bubble_RASTER_format', 'bubble_face_detection')
+        create_photo(conn, photo_entry1)
+
+        update_table(conn, 'photos', ['file_ref_of_numpy_array', 'file_ref_encoding', 
+                                      'file_permissions'], ('bubble2', 'bubble2_en', 'bubble2_perm', 'bubble3' ),
+                     'file_ref_of_numpy_array')
+        drop_table(conn, 'faces')
+       
     conn.close()
 
 if __name__ == '__main__':
