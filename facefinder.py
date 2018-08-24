@@ -64,9 +64,10 @@ def encode_all(dirPath='./pictures/'):
 
 
 
-#################################################################################
-# A comment I haven't worked out yet 
 ################################################################################
+# Auxillary functions used in storing values in the database. May be useful for
+# data shelving/persistent data storage with some editing.
+###############################################################################
 
 def save_landmarks(dirPath, landmarks_dir):
     """ saves a pickled list of dictionaries of point data  for facial landmarks, 
@@ -88,8 +89,7 @@ def save_landmarks(dirPath, landmarks_dir):
             
 
 def load_encodings(encodings_dir='./encodings', encodings_dict=encodings):
-    """ creates a dictionary of face encodings for all image files in dirPath
-    
+    """ creates a dictionary of face encodings for all image files in dirPath (Jess)
     :param encodings_dir: filepath to directory containing face encodings 
     :param encodings_dict: A dictionary. A global/class parameter that associates 
         an image with numPy array of all face encodings detected in this image
@@ -101,9 +101,8 @@ def load_encodings(encodings_dir='./encodings', encodings_dict=encodings):
         fil_des.close()
 
                
-#(Jess)
 def encode_dir(dirPath='./pictures/', encodings_dict=encodings):
-    """ creates a dictionary of face encodings for all image files in dirPath
+    """ creates a dictionary of face encodings for all image files in dirPath (Jess)
     :param dirpath: filepath to directory containing photos 
     :param encodings_dict: A dictionary. A global/class parameter that associates 
         an image with numPy array of all face encodings detected in this image,
@@ -117,9 +116,9 @@ def encode_dir(dirPath='./pictures/', encodings_dict=encodings):
             if file_name not in encodings:
                 encodings_dict[file_name] = imageEncodings
 
-#(Jess)
+
 def all_distances(encodings_dict=encodings, distances_dict=distances):
-    """ creates a dictionary of distances between all pairs of faces     
+    """ creates a dictionary of distances between all pairs of faces (Jess)    
     :param encodings_dict: same as in encode_dir() 
     :param distances_dict: A dictionary. A global/class parameter that associates 
         a min heap of distances between a face and all other faces
@@ -134,27 +133,29 @@ def all_distances(encodings_dict=encodings, distances_dict=distances):
         for idxA, faceA in enumerate(facesA):
             for idxB, distance in enumerate(face_recognition.face_distance (facesB, faceA)):
                 if (imageA == imageB and not idxA==idxB) or imageA != imageB:
-                    heapq.heappush(heap, ((distance,
-                                           (imageA, idxA),
-                                           (imageB, idxB))))
-                
-                    
-                
-#(Jess) 
+                    if dict.__contains__(distances_dict, (imageA, imageB)): 
+                        heapq.heappush(heap, ((distance, idxA, idxB)))
+                    else:
+                        heap.append((distance, idxA, idxB))                        
+                 
 def all_distances2(encodings_dict=encodings, distances_dict=distances):
-    """ creates a dictionary of distances between all pairs of faces     
+    """ creates a dictionary of distances between all pairs of faces (Jess)     
     :param encodings_dict: same as in encode_dir() 
-    :param distances_dict: A dictionary. A global/class parameter that associates 
-        a min heap of distances between a face and all other faces
+    :param distances_dict: A dictionary. A global/class parameter that associates
+        the results of get_distances() for each face in photoA with photoB in an 
+        array of arrays. This function assumes the use of load_encodings() and 
+        calls face_recognition.face_distance() rather than get_distances(). 
+        Currently overwrites the values stored to dict by all_distances()
     """
     keys = list(filter(lambda x: encodings_dict.get(x) != [], encodings_dict.keys()))
     key_pairs = list(itertools.combinations_with_replacement(keys, 2))
     for (imageA, imageB) in key_pairs:
         facesA = encodings_dict.get(imageA)
         facesB = encodings_dict.get(imageB)
+        entry = distances_dict[(imageA, imageB)] = []
         for idxA, faceA in enumerate(facesA):
-            distances_dict[(imageA, imageB)] = ((idxA), list(itertools.starmap(face_recognition.face_distance,
-                                                                               [(facesB, faceA) for faceA in facesA])))
+            entry.append(((idxA), list(itertools.starmap(face_recognition.face_distance,
+                                                         [(facesB, faceA) for faceA in facesA]))))
 
 #(Jess)           
 def distance_mappings(dirPath='./encodings', encoding_function=load_encodings,
@@ -164,9 +165,10 @@ def distance_mappings(dirPath='./encodings', encoding_function=load_encodings,
         encoding_function(dirPath, encodings_dict)
     if len(distances_dict) == 0:
         all_distances(encodings_dict, distances_dict)
-    for list_val in distances.values():
-        for (distance, (imageA, faceA), (imageB, faceB)) in list_val:
-            distance_map_dict[((imageA, faceA), (imageB, faceB))] = distance
+    for (imageA, imageB), list_vals in distances.items():
+        for (distance, idxA, idxB) in list_vals:
+            distance_map_dict[((imageA, idxA), (imageB, idxB))] = distance
+
 ########                    end section                    ########        
 
 
