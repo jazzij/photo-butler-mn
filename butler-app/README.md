@@ -1,3 +1,9 @@
+Bug found:
+find_person() and scrub_person() are unreliable - print statements have been
+added to both to demonstrate the problem. find_person() is being called
+twice - once on the uploaded picture, and once on "gallery.css". And then
+facefinder.find_person() doesn't know what to do with a .css file.
+
 Welcome to the Photo Butler Demo!
 
 What do you need to run this code?
